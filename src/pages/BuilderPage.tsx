@@ -10,7 +10,8 @@ import {
   Clock, 
   Music as MusicIcon, 
   Type, 
-  Eye 
+  Eye,
+  Mail
 } from 'lucide-react';
 
 export default function BuilderPage() {
@@ -108,7 +109,21 @@ export default function BuilderPage() {
             />
           </div>
 
-          <button className="btn-primary full-width" onClick={() => navigate('/preview')}>
+
+          <div className="section-divider"></div>
+
+          <div className="input-group">
+            <label><Mail size={14} /> Host Email (For Delivery)</label>
+            <input 
+              name="hostEmail" 
+              type="email"
+              placeholder="alex@example.com"
+              required
+            />
+            <p className="input-hint">We'll send your final invitation link here.</p>
+          </div>
+
+          <button className="btn-primary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => navigate('/preview')}>
             <Eye size={18} /> Preview Masterpiece
           </button>
         </div>
