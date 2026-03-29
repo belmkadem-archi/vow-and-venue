@@ -3,10 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
   Plus, 
+  Send, 
   Users, 
   Music, 
   MapPin, 
   Image as ImageIcon, 
+  CheckCircle2,
+  Smartphone,
   Sparkles
 } from 'lucide-react';
 
@@ -63,17 +66,16 @@ const FEATURES = [
 export default function LandingPage() {
   const [activeStep, setActiveStep] = useState(0);
 
+  // Handle sticky scroll active step
   useEffect(() => {
     const handleScroll = () => {
-      const sections = document.querySelectorAll('.feature-step');
-      let currentStep = 0;
-      sections.forEach((section, index) => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= window.innerHeight / 2) {
-          currentStep = index;
-        }
-      });
-      setActiveStep(currentStep);
+      const scrollPos = window.scrollY;
+      const windowHeight = window.innerHeight;
+      // Precision sticky scroll logic from the masterpiece
+      const stepIndex = Math.floor(scrollPos / (windowHeight * 0.72)) - 1;
+      if (stepIndex >= 0 && stepIndex < STEPS.length) {
+        setActiveStep(stepIndex);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -89,7 +91,7 @@ export default function LandingPage() {
             <span>VOW & VENUE</span>
           </div>
           <div className="nav-links">
-            <a href="#how-it-works">Process</a>
+            <a href="#how-it-works">Showcase</a>
             <a href="#features">Features</a>
             <Link to="/templates">
               <button className="btn-primary">Get Started</button>
@@ -102,10 +104,9 @@ export default function LandingPage() {
       <section className="hero-section container">
         <div className="hero-glow"></div>
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
-          style={{ position: 'relative', zIndex: 10 }}
         >
           <span className="badge">The Future of Invitations</span>
           <h1 className="hero-title">
@@ -151,26 +152,24 @@ export default function LandingPage() {
                 <AnimatePresence mode="wait">
                   <motion.div 
                     key={activeStep}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -30 }}
-                    transition={{ duration: 0.5, ease: "circOut" }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
                     className="screen-content"
-                    style={{ background: `linear-gradient(to bottom, #080808, ${STEPS[activeStep]?.color}11)` }}
+                    style={{ background: `linear-gradient(to bottom, #080808, ${STEPS[activeStep]?.color}22)` }}
                   >
-                    <div className="mock-ui">
-                      <div className="mock-header">
-                        <div className="ln" style={{ width: '40%' }}></div>
-                      </div>
-                      <div className="mock-card anime-float">
-                        <div className="mock-title">{STEPS[activeStep]?.title}</div>
-                        <div className="mock-lines">
-                          <div className="ln"></div>
-                          <div className="ln"></div>
+                    <div className="mock-ui" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      <div className="mock-header" style={{ height: '8px', width: '40%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}></div>
+                      <div className="mock-card glass" style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div className="mock-title" style={{ fontWeight: 800, fontSize: '1.2rem' }}>{STEPS[activeStep]?.title}</div>
+                        <div className="mock-lines" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                          <div className="ln" style={{ height: '6px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}></div>
+                          <div className="ln" style={{ height: '6px', width: '60%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}></div>
                         </div>
                       </div>
-                      <div className="mock-footer">
-                        <Plus className="mock-plus" style={{ color: STEPS[activeStep]?.color }} />
+                      <div className="mock-footer" style={{ display: 'flex', justifyContent: 'center' }}>
+                         <Plus style={{ color: STEPS[activeStep]?.color, opacity: 0.5 }} />
                       </div>
                     </div>
                   </motion.div>
@@ -198,13 +197,45 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Promo Section (Restored Masterpiece Section) */}
+      <section className="promo-section container">
+        <div className="promo-card glass">
+          <div className="promo-text">
+            <span className="badge">Digital-First Growth</span>
+            <h3>Instant Viral Sharing</h3>
+            <p>
+              Your invitation is more than an email. It's a high-fidelity digital 
+              asset optimized for mobile sharing. Generate beautiful "Teaser" 
+              videos for Instagram Stories or send direct "Digital Envelopes" 
+              to your guest lists via WhatsApp.
+            </p>
+            <ul className="promo-list">
+              <li><CheckCircle2 className="list-icon" /> 1-Click WhatsApp Sharing</li>
+              <li><CheckCircle2 className="list-icon" /> Optimized for Instagram Stories</li>
+              <li><CheckCircle2 className="list-icon" /> Real-time RSVP Tracking & Analytics</li>
+            </ul>
+          </div>
+          <div className="promo-visual">
+            <div className="sharing-mockup glass">
+              <div className="share-icons">
+                <Smartphone className="share-icon" />
+                <Send className="share-icon" />
+                <Sparkles className="share-icon" />
+              </div>
+              <div className="share-stats" style={{ padding: '0 3rem', width: '100%' }}>
+                <div className="stat" style={{ fontSize: '0.8rem', opacity: 0.5, marginBottom: '0.5rem' }}>98% Open Rate</div>
+                <div className="stat-bar" style={{ height: '4px', background: 'var(--primary)', width: '98%', borderRadius: '2px', boxShadow: '0 0 10px var(--primary)' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
-      <section className="cta-section section-padding container">
-        <div className="cta-box glass text-center" style={{ padding: '6rem 2rem', borderRadius: '40px' }}>
-          <h2 style={{ fontSize: '3.5rem', marginBottom: '2rem' }}>Ready to WOW your guests?</h2>
-          <p style={{ fontSize: '1.25rem', color: 'var(--text-dim)', marginBottom: '3rem' }}>
-            Join 10,000+ hosts creating unforgettable experiences.
-          </p>
+      <section className="cta-section container">
+        <div className="cta-box glass">
+          <h2>Ready to WOW your guests?</h2>
+          <p>Join 10,000+ hosts creating unforgettable experiences.</p>
           <Link to="/templates">
             <button className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.1rem' }}>
               Start Your Masterpiece
@@ -214,13 +245,13 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="footer container section-padding">
-        <div className="footer-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: 0.5 }}>
+      <footer className="footer container">
+        <div className="footer-content">
           <div className="logo">
-            <Sparkles className="logo-icon" size={18} />
-            <span style={{ fontSize: '0.9rem' }}>VOW & VENUE</span>
+            <Sparkles className="logo-icon" />
+            <span>VOW & VENUE</span>
           </div>
-          <p style={{ fontSize: '0.8rem' }}>© 2026 Vow & Venue. Cinematic Experiences.</p>
+          <p>© 2026 Vow & Venue. Cinematic Experiences.</p>
         </div>
       </footer>
     </div>
