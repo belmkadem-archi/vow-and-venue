@@ -220,23 +220,36 @@ export default function UnboxingPreview() {
     };
 
     try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setIsRSVPSubmitted(true);
-        setShowRSVP(false);
-        setTimeout(() => setIsRSVPSubmitted(false), 5000);
-      } else {
-        setRsvpError(result.error || 'Something went wrong. Please try again.');
+      if (!id) {
+        // If we are just previewing in the builder (no real database UUID yet)
+        setTimeout(() => {
+          setIsRSVPSubmitted(true);
+          setShowRSVP(false);
+          setTimeout(() => setIsRSVPSubmitted(false), 5000);
+        }, 800);
+        return;
       }
+
+      // Live link: Insert real RSVP into Supabase securely
+      const { error } = await supabase
+        .from('rsvps')
+        .insert([{
+          invitation_id: id,
+          guest_name: String(data.name || ''),
+          email: String(data.email || ''),
+          guest_count: Number(guests),
+          dietary_notes: String(data.message || '')
+        }]);
+
+      if (error) throw error;
+
+      setIsRSVPSubmitted(true);
+      setShowRSVP(false);
+      setTimeout(() => setIsRSVPSubmitted(false), 5000);
+
     } catch (err) {
-      setRsvpError('Failed to connect to the server. Check your connection.');
+      console.error('RSVP Sync Error:', err);
+      setRsvpError('Could not send your RSVP right now. Are you connected to the internet?');
     } finally {
       setIsSubmitting(false);
     }
