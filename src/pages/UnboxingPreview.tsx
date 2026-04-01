@@ -88,7 +88,18 @@ export default function UnboxingPreview() {
   return (
     <div className="botanical-container">
       {/* Top Header Actions (Mute/Share) */}
-      <div className="preview-controls container" style={{ position: 'fixed', top: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 100, width: 'calc(100% - 4rem)' }}>
+      <div className="preview-controls container" style={{ 
+        position: 'absolute', 
+        top: '2rem', 
+        left: '50%', 
+        transform: 'translateX(-50%)', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        zIndex: 100, 
+        width: 'calc(100% - 3rem)',
+        maxWidth: '520px'
+      }}>
         <button onClick={() => navigate('/builder')} className="btn-secondary glass" style={{ padding: '0.8rem', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none' }}>
           <ArrowLeft size={20} color="#f4eedd" />
         </button>
