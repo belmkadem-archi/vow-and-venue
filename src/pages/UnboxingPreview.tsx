@@ -9,7 +9,7 @@ import {
   Mail,
   Users,
   X,
-  Sparkles,
+  Heart,
   Volume2,
   VolumeX
 } from 'lucide-react';
@@ -27,6 +27,7 @@ export default function UnboxingPreview() {
   const [isRSVPSubmitted, setIsRSVPSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rsvpError, setRsvpError] = useState<string | null>(null);
+  const [isCracking, setIsCracking] = useState(false);
 
   const guestOptions = [
     { value: "1", label: "Alone", detail: "Attending Alone" },
@@ -36,13 +37,20 @@ export default function UnboxingPreview() {
   ];
 
   const handleUnbox = () => {
-    setIsFlapOpen(true);
+    setIsCracking(true);
+    // Vibrate/Haptic feel (if supported)
+    if (window.navigator.vibrate) window.navigator.vibrate(50);
+    
     setTimeout(() => {
-      setIsPaperPulled(true);
+      setIsFlapOpen(true);
+      setIsCracking(false);
       setTimeout(() => {
-        setIsUnboxed(true);
-      }, 1500);
-    }, 1200);
+        setIsPaperPulled(true);
+        setTimeout(() => {
+          setIsUnboxed(true);
+        }, 1500);
+      }, 1200);
+    }, 600); // Delay to let crackle finish
   };
 
   const handleRSVP = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -147,24 +155,35 @@ export default function UnboxingPreview() {
                 {/* Envelope Front Body */}
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 100%)', zIndex: 4, borderRadius: '12px', border: '1px solid var(--border)' }}>
                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                      {!isFlapOpen && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 }}
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <div 
+                          className={`wax-seal-heart ${isCracking ? 'crackle-effect' : ''}`}
+                          style={{ margin: '0 auto' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isFlapOpen) handleUnbox();
+                          }}
                         >
-                          <div className="wax-seal" style={{ margin: '0 auto' }}>
-                            <motion.div 
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                            >
-                              <Sparkles size={32} style={{ color: 'var(--accent)' }} />
-                            </motion.div>
-                          </div>
-                          <p style={{ marginTop: '3rem', letterSpacing: '0.4em', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 800 }}>TAP TO UNBOX</p>
-                          <h2 style={{ marginTop: '1rem', fontFamily: 'var(--font-serif)', fontSize: '1.2rem', opacity: 0.8 }}>For You</h2>
-                        </motion.div>
-                      )}
+                          <motion.div
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="heart-relief"
+                          >
+                            <Heart 
+                              size={42} 
+                              fill="currentColor" 
+                              strokeWidth={1}
+                              style={{ opacity: 0.9 }}
+                            />
+                          </motion.div>
+                        </div>
+                        <p style={{ marginTop: '2.5rem', letterSpacing: '0.4em', fontSize: '0.65rem', color: 'var(--accent)', fontWeight: 800 }}>OPEN WITH LOVE</p>
+                        <h2 style={{ marginTop: '0.8rem', fontFamily: 'var(--font-serif)', fontSize: '1.1rem', opacity: 0.7 }}>For You</h2>
+                      </motion.div>
                    </div>
                 </div>
               </motion.div>

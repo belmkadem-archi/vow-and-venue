@@ -230,6 +230,63 @@ body {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
   margin: 3rem auto;
+  opacity: 0.3;
+}
+
+/* Heart Wax Seal Styling */
+.wax-seal-heart {
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at 30% 30%, #be123c 0%, #881337 100%);
+  border-radius: 50% 45% 52% 48% / 48% 52% 45% 55%; /* Irregular wax shape */
+  position: relative;
+  box-shadow: 
+    0 10px 25px rgba(0,0,0,0.4),
+    inset 0 -5px 15px rgba(0,0,0,0.5),
+    inset 0 5px 15px rgba(255,255,255,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-style: preserve-3d;
+  border: 1px solid rgba(159, 18, 57, 0.3);
+}
+
+.wax-seal-heart:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 
+    0 20px 40px rgba(0,0,0,0.5),
+    inset 0 -5px 15px rgba(0,0,0,0.5);
+}
+
+.wax-seal-heart:active {
+  transform: scale(0.92) translateY(2px);
+  box-shadow: 
+    0 5px 10px rgba(0,0,0,0.4),
+    inset 0 -2px 8px rgba(0,0,0,0.5);
+}
+
+.heart-relief {
+  color: var(--accent);
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.wax-seal-heart:hover .heart-relief {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.crackle-effect {
+  animation: crackle 0.5s ease-out forwards;
+}
+
+@keyframes crackle {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(0.95) rotate(2deg); filter: brightness(1.2); }
+  100% { transform: scale(1.05); filter: brightness(1); }
 }
 
 /* Theme: Ethereal Gold (Classic Stationery) */
