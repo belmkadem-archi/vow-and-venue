@@ -13,12 +13,140 @@ import {
   VolumeX
 } from 'lucide-react';
 
+/* 1. ETHEREAL GOLD REVEAL */
+const EtherealGoldReveal = ({ revealStage, onReveal }: any) => {
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: '#fcfbf9', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: revealStage === 0 ? 'pointer' : 'default', overflow: 'hidden' }} onClick={revealStage === 0 ? onReveal : undefined}>
+      {/* Left Door */}
+      <motion.div 
+        initial={{ x: 0 }}
+        animate={{ x: revealStage === 1 ? '-100%' : 0 }}
+        transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
+        style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '50%', background: '#fcfbf9', borderRight: '1px solid rgba(212, 175, 55, 0.3)', zIndex: 10 }}
+      />
+      {/* Right Door */}
+      <motion.div 
+        initial={{ x: 0 }}
+        animate={{ x: revealStage === 1 ? '100%' : 0 }}
+        transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
+        style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '50%', background: '#fcfbf9', borderLeft: '1px solid rgba(212, 175, 55, 0.3)', zIndex: 10 }}
+      />
+      
+      {/* The Crest / Lock */}
+      <motion.div 
+        animate={{ opacity: revealStage === 0 ? 1 : 0, scale: revealStage === 0 ? 1 : 1.2 }}
+        transition={{ duration: 0.8 }}
+        style={{ zIndex: 20, textAlign: 'center' }}
+      >
+         <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}>
+            <svg width="120" height="120" viewBox="0 0 100 100">
+               <circle cx="50" cy="50" r="45" fill="none" stroke="#D4AF37" strokeWidth="1" strokeDasharray="4 4"/>
+               <circle cx="50" cy="50" r="35" fill="none" stroke="#D4AF37" strokeWidth="2" />
+               <path d="M50 5 L50 95 M5 50 L95 50 M18 18 L82 82 M18 82 L82 18" stroke="#D4AF37" strokeWidth="0.5" opacity="0.5"/>
+            </svg>
+         </motion.div>
+         <h2 className="serif" style={{ color: '#D4AF37', marginTop: '2rem', fontSize: '1.2rem', letterSpacing: '0.2em' }}>TOUCH TO REVEAL</h2>
+      </motion.div>
+    </div>
+  );
+};
+
+/* 2. MIDNIGHT NOIR REVEAL */
+const MidnightNoirReveal = ({ revealStage, onReveal }: any) => {
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: '#050505', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: revealStage === 0 ? 'pointer' : 'default', overflow: 'hidden' }} onClick={revealStage === 0 ? onReveal : undefined}>
+      {/* The Silver Eclipse Ring */}
+      <motion.div
+        initial={{ scale: 1, opacity: 1 }}
+        animate={
+          revealStage === 0 
+          ? { scale: [1, 1.05, 1], opacity: [0.6, 1, 0.6] } 
+          : { scale: 50, opacity: 0 } 
+        }
+        transition={
+          revealStage === 0 
+          ? { repeat: Infinity, duration: 3, ease: 'easeInOut' }
+          : { duration: 1.5, ease: 'easeOut' }
+        }
+        style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', border: '2px solid rgba(148, 163, 184, 0.5)', boxShadow: '0 0 40px rgba(148, 163, 184, 0.3), inset 0 0 20px rgba(148, 163, 184, 0.3)', zIndex: 10 }}
+      />
+      
+      {/* Center Monogram */}
+      <motion.div
+        animate={{ opacity: revealStage === 0 ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
+        style={{ zIndex: 20, textAlign: 'center' }}
+      >
+        <span className="serif" style={{ color: '#E2E8F0', fontSize: '2.5rem', letterSpacing: '0.1em', textShadow: '0 0 20px rgba(226, 232, 240, 0.5)' }}>S & J</span>
+        <p style={{ color: '#94A3B8', fontSize: '0.7rem', letterSpacing: '0.4em', marginTop: '2rem' }}>ENTER</p>
+      </motion.div>
+
+      {/* The flash overlay */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: revealStage === 1 ? [0, 1, 0] : 0 }}
+        transition={{ duration: 1.5, times: [0, 0.3, 1] }}
+        style={{ position: 'absolute', inset: 0, background: '#E2E8F0', zIndex: 30, pointerEvents: 'none' }}
+      />
+    </div>
+  );
+};
+
+/* 3. BOTANICAL GLASS REVEAL */
+const BotanicalGlassReveal = ({ revealStage, onReveal }: any) => {
+  return (
+    <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: revealStage === 0 ? 'pointer' : 'default', overflow: 'hidden' }} onClick={revealStage === 0 ? onReveal : undefined}>
+      
+      {/* Faint botanical background image (to blur) */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1543161358-0ceb68fcac60?q=80&w=1000&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.4 }} />
+
+      {/* The heavy frosted glass layer that dissolves */}
+      <motion.div 
+        animate={{ opacity: revealStage === 0 ? 1 : 0, backdropFilter: revealStage === 0 ? 'blur(40px)' : 'blur(0px)' }}
+        transition={{ duration: 1.5, ease: 'easeOut' }}
+        style={{ position: 'absolute', inset: 0, background: 'rgba(5, 5, 5, 0.4)', WebkitBackdropFilter: revealStage === 0 ? 'blur(40px)' : 'blur(0px)', zIndex: 10 }}
+      />
+
+      {/* Green Wax Seal that Cracks */}
+      <motion.div style={{ zIndex: 20, width: '120px', height: '120px', position: 'relative' }}>
+         <motion.div
+           animate={revealStage === 1 ? { x: -80, y: 50, rotate: -45, opacity: 0 } : { x: 0, y: 0, rotate: 0, opacity: 1 }}
+           transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+           style={{ position: 'absolute', inset: 0, clipPath: 'polygon(0 0, 45% 0, 55% 100%, 0 100%)' }}
+         >
+           <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'linear-gradient(135deg, #10b981 0%, #064e3b 100%)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}></div>
+         </motion.div>
+         <motion.div
+           animate={revealStage === 1 ? { x: 80, y: 60, rotate: 45, opacity: 0 } : { x: 0, y: 0, rotate: 0, opacity: 1 }}
+           transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+           style={{ position: 'absolute', inset: 0, clipPath: 'polygon(45% 0, 100% 0, 100% 100%, 55% 100%)' }}
+         >
+           <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'linear-gradient(135deg, #10b981 0%, #064e3b 100%)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}></div>
+         </motion.div>
+         <motion.div 
+           animate={{ opacity: revealStage === 0 ? 1 : 0 }}
+           transition={{ duration: 0.2 }}
+           style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+         >
+            <span className="serif" style={{ color: '#ffffff', fontSize: '1.8rem', opacity: 0.8, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>S&J</span>
+         </motion.div>
+      </motion.div>
+      <motion.p
+        animate={{ opacity: revealStage === 0 ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ position: 'absolute', bottom: '15%', color: '#ffffff', letterSpacing: '0.3em', fontSize: '0.7rem', zIndex: 20 }}
+      >
+         BREAK THE SEAL
+      </motion.p>
+    </div>
+  );
+};
+
 export default function UnboxingPreview() {
   const navigate = useNavigate();
   const { data } = useInvitation();
   const [isUnboxed, setIsUnboxed] = useState(false);
-  const [isFlapOpen, setIsFlapOpen] = useState(false);
-  const [isPaperPulled, setIsPaperPulled] = useState(false);
+  const [revealStage, setRevealStage] = useState(0);
   const [guests, setGuests] = useState("1");
   const [showRSVP, setShowRSVP] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -34,19 +162,13 @@ export default function UnboxingPreview() {
     { value: "4", label: "4", detail: "Three Guests (+3)" }
   ];
 
-  const handleUnbox = () => {
-    // Vibrate/Haptic feel (if supported)
+  const handleReveal = () => {
     if (window.navigator.vibrate) window.navigator.vibrate(50);
+    setRevealStage(1);
     
     setTimeout(() => {
-      setIsFlapOpen(true);
-      setTimeout(() => {
-        setIsPaperPulled(true);
-        setTimeout(() => {
-          setIsUnboxed(true);
-        }, 1500);
-      }, 1200);
-    }, 600); // Simulate firm tactile press
+      setIsUnboxed(true);
+    }, 1500); 
   };
 
 
@@ -115,7 +237,7 @@ export default function UnboxingPreview() {
 
       <AnimatePresence mode="wait">
         {!isUnboxed ? (
-          /* CINEMATIC UNBOXING STAGE */
+          /* CINEMATIC UNBOXING GATES */
           <motion.div 
             key="unboxing"
             initial={{ opacity: 0 }}
@@ -123,110 +245,13 @@ export default function UnboxingPreview() {
             exit={{ opacity: 0, scale: 1.1 }}
             transition={{ duration: 1 }}
             className="unboxing-stage"
+            style={{ position: 'absolute', inset: 0, zIndex: 10 }}
           >
-            <div className="envelope-3d" onClick={!isFlapOpen ? handleUnbox : undefined}>
-              <motion.div 
-                className="envelope-container"
-                initial={{ rotateX: 45, y: 100 }}
-                animate={{ rotateX: isFlapOpen ? 0 : 20, y: isFlapOpen ? 100 : 0 }}
-                transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
-                style={{ 
-                  width: '380px', 
-                  height: '260px', 
-                  background: 'linear-gradient(135deg, #304236 0%, #1A251E 100%)', /* The back interior of the envelope */
-                  borderRadius: '12px',
-                  boxShadow: '0 50px 100px rgba(0,0,0,0.8)',
-                  position: 'relative',
-                  transformStyle: 'preserve-3d',
-                  margin: '0 auto'
-                }}
-              >
-                {/* Envelope Flap */}
-                <div className={`envelope-flap ${isFlapOpen ? 'open' : ''}`}></div>
-                
-                {/* Invitation Paper (inside) */}
-                <div className={`envelope-paper ${isPaperPulled ? 'pulled' : ''}`}>
-                   <h3 className="serif" style={{ color: 'var(--accent)', fontSize: '1.2rem', marginBottom: '1rem' }}>M A S T E R P I E C E</h3>
-                   <div style={{ width: '30px', height: '1px', background: 'var(--accent)', opacity: 0.5 }}></div>
-                </div>
-
-                {/* Envelope Front Pocket (Solid Green Front) */}
-                <div style={{ 
-                  position: 'absolute', bottom: 0, left: 0, width: '100%', height: '65%', 
-                  background: 'linear-gradient(to bottom, #4A5D4E 0%, #2D3A30 100%)', 
-                  borderRadius: '0 0 12px 12px', zIndex: 3, 
-                  borderTop: '1px solid rgba(255,255,255,0.1)', 
-                  boxShadow: '0 -5px 20px rgba(0,0,0,0.2)',
-                  transform: 'translateZ(2px)'
-                }}></div>
-
-                {/* Envelope Front Body Overlay */}
-                <div style={{ position: 'absolute', inset: 0, zIndex: 4, borderRadius: '12px', background: 'linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4) 100%)', pointerEvents: 'none', transform: 'translateZ(5px)' }}>
-                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        <motion.div 
-                          className="vector-seal" 
-                          style={{ margin: '0 auto' }}
-                          whileHover={{ scale: 1.05, rotate: 2 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isFlapOpen) handleUnbox();
-                          }}
-                        >
-                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style={{width: '90px', height: '90px'}}>
-                            <defs>
-                              <radialGradient id="gold-grad" cx="30%" cy="30%" r="70%">
-                                <stop offset="0%" stopColor="#FFF7D6" />
-                                <stop offset="20%" stopColor="#D4AF37" />
-                                <stop offset="50%" stopColor="#C59F2A" />
-                                <stop offset="85%" stopColor="#8A6B1C" />
-                                <stop offset="100%" stopColor="#4A380A" />
-                              </radialGradient>
-                              <filter id="gold-inner-shadow">
-                                <feOffset dx="0" dy="2"/>
-                                <feGaussianBlur stdDeviation="1.5" result="offset-blur"/>
-                                <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
-                                <feFlood floodColor="#4A380A" floodOpacity="0.9" result="color"/>
-                                <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
-                                <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
-                              </filter>
-                              <filter id="gold-drop-shadow">
-                                <feDropShadow dx="0" dy="5" stdDeviation="5" floodOpacity="0.5" />
-                              </filter>
-                            </defs>
-                            <path d="M50 2C65 1 78 8 85 18C92 28 98 42 96 55C94 68 85 80 72 88C60 95 45 98 32 94C20 89 10 78 5 65C0 52 2 35 10 22C18 10 32 3 50 2Z" fill="url(#gold-grad)" filter="url(#gold-drop-shadow)" />
-                            <circle cx="50" cy="50" r="34" fill="url(#gold-grad)" filter="url(#gold-inner-shadow)" />
-                            <circle cx="50" cy="50" r="31" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="0.8" />
-                          </svg>
-                          <span className="vector-seal-text" style={{ color: '#4A380A', textShadow: '-1px -1px 0 rgba(255,255,255,0.4), 1px 1px 2px rgba(0,0,0,0.3)', fontWeight: 700 }}>S <span style={{ fontSize: '1rem', margin: '0 2px' }}>&</span> J</span>
-                        </motion.div>
-                        <p style={{ marginTop: '3rem', letterSpacing: '0.4em', fontSize: '0.65rem', color: '#8A6B1C', fontWeight: 800 }}>CLICK TO OPEN...</p>
-                        <h2 style={{ marginTop: '0.8rem', fontFamily: 'var(--font-serif)', fontSize: '1.1rem', opacity: 0.7, color: '#f4eedd' }}>For You</h2>
-                      </motion.div>
-                   </div>
-                </div>
-              </motion.div>
-              
-              {/* Floating Cinematic Dust */}
-              {[...Array(15)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 0 }}
-                  animate={{ 
-                    opacity: [0, 0.3, 0], 
-                    y: -400, 
-                    x: Math.random() * 600 - 300,
-                  }}
-                  transition={{ duration: 6 + Math.random() * 6, repeat: Infinity, delay: Math.random() * 5 }}
-                  style={{ position: 'absolute', bottom: '10%', left: '50%', width: '2px', height: '2px', borderRadius: '50%', background: 'var(--accent)', filter: 'blur(1px)' }}
-                ></motion.div>
-              ))}
-            </div>
+             {data.template === 'ethereal-gold' && <EtherealGoldReveal revealStage={revealStage} onReveal={handleReveal} />}
+             {data.template === 'midnight-noir' && <MidnightNoirReveal revealStage={revealStage} onReveal={handleReveal} />}
+             {data.template === 'botanical-glass' && <BotanicalGlassReveal revealStage={revealStage} onReveal={handleReveal} />}
+             {/* Fallback */}
+             {!data.template && <MidnightNoirReveal revealStage={revealStage} onReveal={handleReveal} />}
           </motion.div>
         ) : (
           /* FINAL INVITATION STAGE */
