@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useInvitation } from '../InvitationContext';
+import { supabase } from '../lib/supabase';
 import { 
   ArrowLeft, 
   Sparkles, 
@@ -13,15 +14,53 @@ import {
   Eye,
   Mail,
   Heart,
-  ChevronDown
+  ChevronDown,
+  Loader2,
+  Link as LinkIcon
 } from 'lucide-react';
 
 export default function BuilderPage() {
   const navigate = useNavigate();
   const { data, updateData } = useInvitation();
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     updateData({ [e.target.name]: e.target.value });
+  };
+
+  const handleGenerateLink = async () => {
+    setIsGenerating(true);
+    try {
+      // Create record in Supabase
+      const { data: invite, error } = await supabase
+        .from('invitations')
+        .insert([{
+          hostNames: data.hostNames,
+          eventTitle: data.eventTitle,
+          date: data.date,
+          time: data.time,
+          venue: data.venue,
+          mapsLink: data.mapsLink,
+          soundtrack: data.soundtrack,
+          personalMessage: data.personalMessage,
+          template: data.template,
+          is_premium: false
+        }])
+        .select()
+        .single();
+        
+      if (error) throw error;
+      
+      // Navigate to the newly generated live custom link
+      if (invite && invite.id) {
+        navigate(`/v/${invite.id}`);
+      }
+    } catch (error) {
+      console.error("Error generating invitation:", error);
+      alert("Failed to generate link. Have you created the invitations table in Supabase yet?");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -158,13 +197,35 @@ export default function BuilderPage() {
               />
             </div>
 
-            <button 
-              className="btn-primary" 
-              style={{ width: '100%', marginTop: '1rem', padding: '1.2rem', gap: '0.8rem' }} 
-              onClick={() => navigate('/preview')}
-            >
-              <Eye size={18} /> Preview Masterpiece
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+              <button 
+                className="btn-secondary" 
+                style={{ flex: 1, padding: '1.2rem', gap: '0.8rem' }} 
+                onClick={() => navigate('/preview')}
+              >
+                <Eye size={18} /> Preview
+              </button>
+              
+              <button 
+                className="btn-primary" 
+                style={{ flex: 2, padding: '1.2rem', gap: '0.8rem', position: 'relative', overflow: 'hidden' }} 
+                onClick={handleGenerateLink}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} style={{ display: 'inline-flex' }}>
+                      <Loader2 size={18} />
+                    </motion.div>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <LinkIcon size={18} /> Generate Live Link
+                  </>
+                )}
+              </button>
+            </div>
           </section>
         </div>
       </motion.aside>

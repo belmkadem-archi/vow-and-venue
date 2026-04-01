@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { useInvitation } from '../InvitationContext';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useInvitation, type InvitationData } from '../InvitationContext';
+import { supabase } from '../lib/supabase';
 import { 
   ArrowLeft, 
   Share2, 
@@ -144,7 +145,15 @@ const BotanicalGlassReveal = ({ revealStage, onReveal }: any) => {
 
 export default function UnboxingPreview() {
   const navigate = useNavigate();
-  const { data } = useInvitation();
+  const { id } = useParams<{ id: string }>();
+  
+  // Use Context for Builder preview, fallback state for Live link
+  const context = useInvitation();
+  
+  const [liveData, setLiveData] = useState<InvitationData | null>(null);
+  const [isLoadingLive, setIsLoadingLive] = useState(!!id);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   const [isUnboxed, setIsUnboxed] = useState(false);
   const [revealStage, setRevealStage] = useState(0);
   const [guests, setGuests] = useState("1");
@@ -154,6 +163,31 @@ export default function UnboxingPreview() {
   const [isRSVPSubmitted, setIsRSVPSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rsvpError, setRsvpError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadLiveInvitation() {
+      if (!id) return;
+      try {
+        const { data: invite, error } = await supabase
+          .from('invitations')
+          .select('*')
+          .eq('id', id)
+          .single();
+          
+        if (error) throw error;
+        setLiveData(invite);
+      } catch (err) {
+        console.error("Error loading invitation:", err);
+        setFetchError("This invitation could not be found or has been removed.");
+      } finally {
+        setIsLoadingLive(false);
+      }
+    }
+    loadLiveInvitation();
+  }, [id]);
+
+  // Use live data if fetching from real URL, else fallback to Builder context
+  const data = liveData || context.data;
 
   const guestOptions = [
     { value: "1", label: "Alone", detail: "Attending Alone" },
@@ -224,8 +258,30 @@ export default function UnboxingPreview() {
     }
   };
 
+  if (isLoadingLive) {
+    return (
+      <div style={{ background: '#050505', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+            <div style={{ width: '30px', height: '30px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%' }}></div>
+         </motion.div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div style={{ background: '#050505', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff' }}>
+        <h2 className="serif" style={{ fontSize: '2rem', marginBottom: '1rem' }}>Invitation Unavailable</h2>
+        <p style={{ opacity: 0.6, letterSpacing: '0.1em' }}>{fetchError}</p>
+      </div>
+    );
+  }
+
+  // Check if live data is freemium or premium
+  const isPremium = liveData ? (liveData as any).is_premium : true; // Always premium in Builder Mode
+
   return (
-    <div className="unboxing-container" style={{ background: '#050505', minHeight: '100vh', overflow: 'hidden' }}>
+    <div className="unboxing-container" style={{ background: '#050505', minHeight: '100vh', overflow: 'hidden', position: 'relative' }}>
       {/* Cinematic Background */}
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
         <motion.div 
@@ -519,6 +575,37 @@ export default function UnboxingPreview() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Freemium Watermark Badge (Non-Premium Users Only) */}
+      {!isPremium && (
+        <a 
+          href="https://vowandvenue.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{
+            position: 'absolute',
+            bottom: '1.5rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(0,0,0,0.8)',
+            backdropFilter: 'blur(10px)',
+            padding: '0.5rem 1rem',
+            borderRadius: '20px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            fontSize: '0.65rem',
+            color: 'rgba(255,255,255,0.8)',
+            letterSpacing: '0.1em',
+            textDecoration: 'none',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+          }}
+        >
+          <span>Created with Vow & Venue</span>
+        </a>
+      )}
     </div>
   );
 }
