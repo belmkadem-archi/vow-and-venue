@@ -320,9 +320,9 @@ export default function LandingPage() {
             <div className="footer-links">
               <h5 style={{ marginBottom: '1.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.8rem' }}>Support</h5>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <li><a href="#" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>Guidelines</a></li>
-                <li><a href="#" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>Privacy Policy</a></li>
-                <li><a href="#" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>Terms of Service</a></li>
+                <li><Link to="/refund" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>Refund Policy</Link></li>
+                <li><Link to="/privacy" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>Privacy Policy</Link></li>
+                <li><Link to="/terms" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>Terms and Conditions</Link></li>
               </ul>
             </div>
           </div>
