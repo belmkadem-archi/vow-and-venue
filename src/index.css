@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&display=swap');
 
 :root {
   --primary: #9f1239; /* Deep Rose / Ruby */
@@ -233,42 +233,247 @@ body {
   opacity: 0.3;
 }
 
-/* High-End Vector SVG Wax Seal */
-.vector-seal {
-  width: 140px;
-  height: 140px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  /* Simple, reliable drop-shadow that works perfectly on all browsers */
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+/* Botanical Theme Variables */
+:root {
+  --botanical-bg: #1a1c1a; /* Dark charcoal olive */
+  --botanical-cream: #f4eedd;
+  --botanical-olive: #4a5a4a;
+  --botanical-olive-hover: #384638;
+  --botanical-gold: #b39b5d;
+  --botanical-text: #2c2c2c;
+  --botanical-dark-text: #1a1a1a;
+  --botanical-light-text: #e0e0e0;
+  --font-script: 'Great Vibes', cursive;
+  --font-serif: 'Playfair Display', serif;
 }
 
-.vector-seal svg {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Botanical Core Components */
+.botanical-container {
+  background: var(--botanical-bg);
+  min-height: 100vh;
+  color: var(--botanical-cream);
+  font-family: var(--font-serif);
+  overflow-x: hidden;
+  position: relative;
+}
+
+.botanical-hero-img-container {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+
+.botanical-hero-img {
   width: 100%;
   height: 100%;
-  z-index: 1;
+  object-fit: cover;
+  object-position: center 20%;
+  /* Moody dark overlay matching the reference */
+  filter: brightness(0.6) contrast(1.1) saturate(0.8) sepia(0.2) hue-rotate(-10deg);
 }
 
-.vector-seal-text {
+.botanical-badge-wrapper {
+  position: absolute;
+  bottom: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 320px;
+  z-index: 10;
+}
+
+/* The actual cream circle */
+.botanical-badge {
   position: relative;
-  z-index: 2;
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
-  color: #d1123d; /* Highlight color for realistic text embossing */
-  font-size: 1.8rem;
-  line-height: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--botanical-cream);
+  border: 4px solid var(--botanical-bg); /* create visual gap */
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  letter-spacing: -0.05em;
-  /* Flawless optical illusion of text engraved into wax */
-  text-shadow: 
-    -1px -1px 1px rgba(0, 0, 0, 0.6),
-     1px  1px 1px rgba(255, 255, 255, 0.2);
+  padding: 3rem;
+  z-index: 2;
+}
+
+/* Elegant inner gold border */
+.botanical-badge::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(178, 156, 103, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Botanical Floral Overlays */
+.botanical-floral {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+}
+
+.botanical-floral-left {
+  bottom: -30px;
+  left: -50px;
+  width: 160px;
+  height: auto;
+  transform: rotate(-15deg);
+}
+
+.botanical-floral-right {
+  bottom: -40px;
+  right: -50px;
+  width: 180px;
+  height: auto;
+  transform: scaleX(-1) rotate(-10deg);
+}
+
+.botanical-title {
+  font-family: var(--font-script);
+  font-size: 3.2rem;
+  color: var(--botanical-dark-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+  font-weight: 400;
+}
+
+.botanical-subtitle {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  letter-spacing: 0.05em;
+}
+
+.btn-olive {
+  background-color: var(--botanical-olive);
+  color: var(--botanical-cream);
+  border: none;
+  border-radius: 24px;
+  padding: 0.9rem 1.8rem;
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  letter-spacing: 0.05em;
+}
+
+.btn-olive:hover {
+  background-color: var(--botanical-olive-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+/* Timeline Layout */
+.timeline-section {
+  padding: 220px 1rem 120px 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.timeline-header {
+  font-family: var(--font-script);
+  font-size: 3rem;
+  color: rgba(244, 238, 221, 0.9); /* Lighter cream */
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.timeline-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(178, 156, 103, 0.15);
+  border-radius: 20px;
+  padding: 3rem 2rem 2rem; /* extra top padding for badge */
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+/* The floating date badge */
+.timeline-date-badge {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--botanical-bg);
+  border: 1px solid rgba(178, 156, 103, 0.3);
+  color: rgba(244, 238, 221, 0.8);
+  padding: 0.4rem 1.5rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-family: var(--font-serif);
+  letter-spacing: 0.1em;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-time-event {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.timeline-time {
+  font-family: var(--font-serif);
+  color: rgba(244, 238, 221, 0.8);
+  font-size: 1.05rem;
+  min-width: 45px;
+}
+
+.timeline-dash {
+  color: rgba(178, 156, 103, 0.6);
+  font-size: 1rem;
+}
+
+.timeline-event {
+  font-family: var(--font-serif);
+  color: rgba(244, 238, 221, 0.95);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.timeline-location {
+  font-family: var(--font-serif);
+  color: rgba(244, 238, 221, 0.5);
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+  line-height: 1.5;
+  margin-left: 65px; /* Alignment with event text */
+}
+
+/* Delicate timeline divider dots */
+.timeline-box::after {
+  content: '•';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(178, 156, 103, 0.4);
+  font-size: 2rem;
 }
 
 /* Theme: Ethereal Gold (Classic Stationery) */

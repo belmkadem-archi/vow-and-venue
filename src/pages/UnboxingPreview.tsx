@@ -16,9 +16,7 @@ import {
 export default function UnboxingPreview() {
   const navigate = useNavigate();
   const { data } = useInvitation();
-  const [isUnboxed, setIsUnboxed] = useState(false);
-  const [isFlapOpen, setIsFlapOpen] = useState(false);
-  const [isPaperPulled, setIsPaperPulled] = useState(false);
+  const [isDetailsRevealed, setIsDetailsRevealed] = useState(false);
   const [guests, setGuests] = useState("1");
   const [showRSVP, setShowRSVP] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -33,21 +31,6 @@ export default function UnboxingPreview() {
     { value: "3", label: "3", detail: "Two Guests (+2)" },
     { value: "4", label: "4", detail: "Three Guests (+3)" }
   ];
-
-  const handleUnbox = () => {
-    // Vibrate/Haptic feel (if supported)
-    if (window.navigator.vibrate) window.navigator.vibrate(50);
-    
-    setTimeout(() => {
-      setIsFlapOpen(true);
-      setTimeout(() => {
-        setIsPaperPulled(true);
-        setTimeout(() => {
-          setIsUnboxed(true);
-        }, 1500);
-      }, 1200);
-    }, 600); // Simulate firm tactile press
-  };
 
 
   const handleRSVP = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -103,242 +86,163 @@ export default function UnboxingPreview() {
   };
 
   return (
-    <div className="unboxing-container" style={{ background: '#050505', minHeight: '100vh', overflow: 'hidden' }}>
-      {/* Cinematic Background */}
-      <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 100, repeat: Infinity, ease: 'linear' }}
-          style={{ position: 'absolute', top: '10%', right: '10%', width: '1000px', height: '1000px', background: 'radial-gradient(circle, var(--primary-glow) 0%, transparent 60%)', opacity: 0.1, filter: 'blur(100px)' }}
-        ></motion.div>
+    <div className="botanical-container">
+      {/* Top Header Actions (Mute/Share) */}
+      <div className="preview-controls container" style={{ position: 'fixed', top: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 100, width: 'calc(100% - 4rem)' }}>
+        <button onClick={() => navigate('/builder')} className="btn-secondary glass" style={{ padding: '0.8rem', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none' }}>
+          <ArrowLeft size={20} color="#f4eedd" />
+        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button onClick={() => setIsMuted(!isMuted)} className="btn-secondary glass" style={{ padding: '0.8rem', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none' }}>
+            {isMuted ? <VolumeX size={20} color="#f4eedd" /> : <Volume2 size={20} color="#f4eedd" />}
+          </button>
+          <button onClick={handleShare} className="btn-secondary glass" style={{ padding: '0.8rem', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none' }}>
+            <Share2 size={20} color="#f4eedd" />
+          </button>
+        </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        {!isUnboxed ? (
-          /* CINEMATIC UNBOXING STAGE */
-          <motion.div 
-            key="unboxing"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 1 }}
-            className="unboxing-stage"
-          >
-            <div className="envelope-3d" onClick={!isFlapOpen ? handleUnbox : undefined}>
-              <motion.div 
-                className="envelope-container"
-                initial={{ rotateX: 45, y: 100 }}
-                animate={{ rotateX: isFlapOpen ? 0 : 20, y: isFlapOpen ? 100 : 0 }}
-                transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
-                style={{ 
-                  width: '500px', 
-                  height: '350px', 
-                  background: 'linear-gradient(135deg, #1a1a1a 0%, #050505 100%)',
-                  borderRadius: '12px',
-                  boxShadow: '0 50px 100px rgba(0,0,0,0.8)',
-                  position: 'relative',
-                  transformStyle: 'preserve-3d'
-                }}
-              >
-                {/* Envelope Flap */}
-                <div className={`envelope-flap ${isFlapOpen ? 'open' : ''}`}></div>
-                
-                {/* Invitation Paper (inside) */}
-                <div className={`envelope-paper ${isPaperPulled ? 'pulled' : ''}`}>
-                   <h3 className="serif" style={{ color: 'var(--accent)', fontSize: '1.2rem', marginBottom: '1rem' }}>M A S T E R P I E C E</h3>
-                   <div style={{ width: '30px', height: '1px', background: 'var(--accent)', opacity: 0.5 }}></div>
-                </div>
-
-                {/* Envelope Front Body */}
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 100%)', zIndex: 4, borderRadius: '12px', border: '1px solid var(--border)' }}>
-                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        <motion.div 
-                          className="vector-seal" 
-                          style={{ margin: '0 auto' }}
-                          whileHover={{ scale: 1.05, rotate: 2 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isFlapOpen) handleUnbox();
-                          }}
-                        >
-                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                              <radialGradient id="wax-grad" cx="35%" cy="35%" r="65%">
-                                <stop offset="0%" stopColor="#ef233c" />
-                                <stop offset="50%" stopColor="#d90429" />
-                                <stop offset="100%" stopColor="#8d0801" />
-                              </radialGradient>
-                              <filter id="inner-shadow">
-                                <feOffset dx="0" dy="2"/>
-                                <feGaussianBlur stdDeviation="2" result="offset-blur"/>
-                                <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
-                                <feFlood floodColor="black" floodOpacity="0.7" result="color"/>
-                                <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
-                                <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
-                              </filter>
-                              <filter id="drop-shadow">
-                                <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.5" />
-                              </filter>
-                            </defs>
-                            <path d="M50 2C65 1 78 8 85 18C92 28 98 42 96 55C94 68 85 80 72 88C60 95 45 98 32 94C20 89 10 78 5 65C0 52 2 35 10 22C18 10 32 3 50 2Z" fill="url(#wax-grad)" filter="url(#drop-shadow)" />
-                            <circle cx="50" cy="50" r="34" fill="url(#wax-grad)" filter="url(#inner-shadow)" />
-                            <circle cx="50" cy="50" r="32" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                          </svg>
-                          <span className="vector-seal-text">S <span style={{ fontSize: '1rem', margin: '0 2px' }}>&</span> J</span>
-                        </motion.div>
-                        <p style={{ marginTop: '3rem', letterSpacing: '0.4em', fontSize: '0.65rem', color: 'var(--accent)', fontWeight: 800 }}>BREAK THE SEAL</p>
-                        <h2 style={{ marginTop: '0.8rem', fontFamily: 'var(--font-serif)', fontSize: '1.1rem', opacity: 0.7 }}>For You</h2>
-                      </motion.div>
-                   </div>
-                </div>
-              </motion.div>
-              
-              {/* Floating Cinematic Dust */}
-              {[...Array(15)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 0 }}
-                  animate={{ 
-                    opacity: [0, 0.3, 0], 
-                    y: -400, 
-                    x: Math.random() * 600 - 300,
-                  }}
-                  transition={{ duration: 6 + Math.random() * 6, repeat: Infinity, delay: Math.random() * 5 }}
-                  style={{ position: 'absolute', bottom: '10%', left: '50%', width: '2px', height: '2px', borderRadius: '50%', background: 'var(--accent)', filter: 'blur(1px)' }}
-                ></motion.div>
-              ))}
-            </div>
-          </motion.div>
-        ) : (
-          /* FINAL INVITATION STAGE */
-          <motion.div 
-            key="invitation"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
-            className="invitation-stage"
-            style={{ position: 'relative', width: '100%', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 2rem' }}
-          >
-            {/* Header Controls */}
-            <div className="preview-controls container" style={{ position: 'fixed', top: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 100, width: 'calc(100% - 4rem)' }}>
-              <button onClick={() => navigate('/builder')} className="btn-secondary glass" style={{ padding: '0.8rem', borderRadius: '50%' }}>
-                <ArrowLeft size={20} />
-              </button>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button onClick={() => setIsMuted(!isMuted)} className="btn-secondary glass" style={{ padding: '0.8rem', borderRadius: '50%' }}>
-                  {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                </button>
-                <button onClick={handleShare} className="btn-secondary glass" style={{ padding: '0.8rem', borderRadius: '50%' }}>
-                  <Share2 size={20} />
-                </button>
-              </div>
-            </div>
-
-            {/* Editorial Invitation Card */}
-            <motion.div 
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 1.2 }}
-              className={`invitation-card theme-${data.template}`}
-              style={{ 
-                maxWidth: '650px', 
-                width: '100%', 
-                padding: '6rem 4rem', 
-                textAlign: 'center', 
-                borderRadius: '24px',
-                position: 'relative',
-                overflow: 'hidden'
+      {/* Hero Section */}
+      <motion.div 
+        animate={{ y: isDetailsRevealed ? -100 : 0 }} 
+        transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+        className="botanical-hero-img-container"
+      >
+        <img 
+          src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2669&auto=format&fit=crop" 
+          alt="Couple" 
+          className="botanical-hero-img" 
+        />
+        
+        {/* The Cream Overlapping Badge */}
+        <div className="botanical-badge-wrapper">
+          <div className="botanical-badge">
+            <h2 className="botanical-title">You're Invited!</h2>
+            <p className="botanical-subtitle">Join us in making this day<br/>unforgettable!</p>
+            <button 
+              className="btn-olive" 
+              onClick={() => {
+                if (window.navigator.vibrate) window.navigator.vibrate(50);
+                setIsDetailsRevealed(true);
+                // Scroll to timeline smoothly
+                setTimeout(() => {
+                  document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
               }}
             >
-               {/* Theme-Specific Flourishes */}
-               {data.template === 'ethereal-gold' && (
-                 <div style={{ position: 'absolute', inset: '10px', border: '1px solid rgba(212, 175, 55, 0.3)', borderRadius: '14px', pointerEvents: 'none' }}></div>
-               )}
-               {data.template === 'botanical-glass' && (
-                 <div style={{ position: 'absolute', top: -100, right: -100, width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(40px)', zIndex: -1 }}></div>
-               )}
-               
-               <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'linear-gradient(to right, transparent, var(--accent), transparent)', opacity: 0.5 }}></div>
-               
-               <header style={{ marginBottom: '5rem' }}>
-                 <motion.p 
-                   initial={{ opacity: 0, y: 10 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   transition={{ delay: 0.8 }}
-                   style={{ letterSpacing: '0.6em', fontSize: '0.65rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '3rem' }}
-                 >
-                   THE PLEASURE OF YOUR COMPANY
-                 </motion.p>
-                 <motion.h1 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1, duration: 1.5 }}
-                    className="serif" 
-                    style={{ fontSize: '4.5rem', lineHeight: 0.9, marginBottom: '2.5rem', fontWeight: 400 }}
-                 >
-                   {data.hostNames || "Sarah & James"}
-                 </motion.h1>
-                 <motion.p 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.2 }}
-                    style={{ fontSize: '1.2rem', color: 'var(--text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase' }}
-                 >
-                   {data.eventTitle || "Wedding Celebration"}
-                 </motion.p>
-               </header>
+              Discover the details
+            </button>
+          </div>
+          {/* Floral Left */}
+          <div className="botanical-floral botanical-floral-left">
+            <svg viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M50 150 C 20 100, 10 50, 40 10" stroke="#f4eedd" strokeWidth="2" fill="none" />
+              <path d="M45 130 C 25 120, 15 110, 20 100 C 35 105, 45 115, 45 130 Z" fill="#f4eedd" opacity="0.9" />
+              <path d="M35 90 C 15 80, 5 70, 10 60 C 25 65, 35 75, 35 90 Z" fill="#f4eedd" opacity="0.8" />
+              <path d="M42 50 C 22 40, 12 30, 17 20 C 32 25, 42 35, 42 50 Z" fill="#f4eedd" opacity="0.9" />
+              <circle cx="20" cy="110" r="4" fill="#fff" />
+              <circle cx="15" cy="70" r="3" fill="#fff" />
+              <circle cx="25" cy="30" r="4.5" fill="#fff" />
+            </svg>
+          </div>
+          {/* Floral Right */}
+          <div className="botanical-floral botanical-floral-right">
+             <svg viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M50 150 C 20 100, 10 50, 40 10" stroke="#f4eedd" strokeWidth="2" fill="none" />
+              <path d="M45 130 C 25 120, 15 110, 20 100 C 35 105, 45 115, 45 130 Z" fill="#f4eedd" opacity="0.9" />
+              <path d="M35 90 C 15 80, 5 70, 10 60 C 25 65, 35 75, 35 90 Z" fill="#f4eedd" opacity="0.8" />
+              <path d="M42 50 C 22 40, 12 30, 17 20 C 32 25, 42 35, 42 50 Z" fill="#f4eedd" opacity="0.9" />
+              <circle cx="20" cy="110" r="4" fill="#fff" />
+              <circle cx="15" cy="70" r="3" fill="#fff" />
+              <circle cx="25" cy="30" r="4.5" fill="#fff" />
+            </svg>
+          </div>
+        </div>
+      </motion.div>
 
-               <div className="editorial-divider" style={{ width: '60px', height: '1px', background: 'var(--accent)', margin: '4rem auto', opacity: 0.3 }}></div>
-
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '3rem', marginBottom: '5rem' }}>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', letterSpacing: '0.2em', marginBottom: '0.5rem' }}>DATE</p>
-                    <p style={{ fontWeight: 400, fontSize: '1.5rem', fontFamily: 'var(--font-serif)' }}>{data.date || "21.06.26"}</p>
-                  </div>
-                  <div style={{ width: '1px', height: '60px', background: 'var(--border)', opacity: 0.5 }}></div>
-                  <div style={{ textAlign: 'left' }}>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', letterSpacing: '0.2em', marginBottom: '0.5rem' }}>TIME</p>
-                    <p style={{ fontWeight: 400, fontSize: '1.5rem', fontFamily: 'var(--font-serif)' }}>{data.time || "18:00"}</p>
-                  </div>
+      {/* Details / Timeline Stage */}
+      <AnimatePresence>
+        {isDetailsRevealed && (
+          <motion.div 
+            id="timeline"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="timeline-section"
+          >
+            <h3 className="timeline-header">Event timeline</h3>
+            
+            <div className="timeline-box">
+               <div className="timeline-date-badge">{data.date || "24 March"}</div>
+               
+               <div className="timeline-item">
+                 <div className="timeline-time-event">
+                   <span className="timeline-time">12:00</span>
+                   <span className="timeline-dash">-</span>
+                   <span className="timeline-event">Wedding ceremony</span>
+                 </div>
+                 <div className="timeline-location">
+                   {data.venue || "Vrtba Garden, Karmelitska 25, 118 00 Praha 1"}
+                 </div>
                </div>
 
-               <div style={{ marginBottom: '5rem' }}>
-                 <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', letterSpacing: '0.2em', marginBottom: '1rem' }}>LOCATION</p>
-                 <p style={{ fontSize: '1.2rem', color: 'var(--text)', maxWidth: '400px', margin: '0 auto', lineHeight: 1.6 }}>
-                   {data.venue || "The Grand Pavilion, Paris"}
-                 </p>
+               <div className="timeline-item">
+                 <div className="timeline-time-event">
+                   <span className="timeline-time">13:30</span>
+                   <span className="timeline-dash">-</span>
+                   <span className="timeline-event">Transfer</span>
+                 </div>
                </div>
 
-               <footer style={{ marginTop: '5rem', display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center' }}>
-                 <button 
-                  className="btn-primary cinematic-glow" 
-                  style={{ width: '100%', maxWidth: '300px', padding: '1.2rem', letterSpacing: '0.2em', fontSize: '0.8rem' }}
+               <div className="timeline-item">
+                 <div className="timeline-time-event">
+                   <span className="timeline-time">14:00</span>
+                   <span className="timeline-dash">-</span>
+                   <span className="timeline-event">Cocktail hour</span>
+                 </div>
+                 <div className="timeline-location">
+                   Petřínské sady 411/14, 118 00 Praha 1
+                 </div>
+               </div>
+
+               <div className="timeline-item">
+                 <div className="timeline-time-event">
+                   <span className="timeline-time">15:00</span>
+                   <span className="timeline-dash">-</span>
+                   <span className="timeline-event">First dance</span>
+                 </div>
+               </div>
+
+               <div className="timeline-item">
+                 <div className="timeline-time-event">
+                   <span className="timeline-time">17:00</span>
+                   <span className="timeline-dash">-</span>
+                   <span className="timeline-event">Dinner & Party</span>
+                 </div>
+               </div>
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+               <button 
+                  className="btn-olive" 
+                  style={{ width: '100%', maxWidth: '300px', padding: '1.2rem', fontSize: '1rem', borderRadius: '30px' }}
                   onClick={() => setShowRSVP(true)}
                  >
-                   R . S . V . P
-                 </button>
-                 <p style={{ fontSize: '0.7rem', opacity: 0.4, letterSpacing: '0.1em' }}>PLEASE RESPOND BY THE FIFTEENTH OF MAY</p>
-               </footer>
-            </motion.div>
-
-            {/* Success Toast */}
+                   RSVP Now
+                </button>
+            </div>
+            
+            {/* Success Toast Details Form */}
             <AnimatePresence>
               {isRSVPSubmitted && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 100 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 100 }}
-                  className="glass-morphism"
-                  style={{ position: 'fixed', bottom: '40px', padding: '1rem 2.5rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '1rem', borderRadius: '99px', border: '1px solid rgba(16, 185, 129, 0.2)', zIndex: 1000 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  style={{ marginTop: '2rem', padding: '1rem', color: '#b39b5d', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', background: 'rgba(178, 156, 103, 0.1)', borderRadius: '12px' }}
                 >
-                  <CheckCircle size={20} />
-                  Your response has been engraved.
+                  <CheckCircle size={18} />
+                  Your response has been secured.
                 </motion.div>
               )}
             </AnimatePresence>
