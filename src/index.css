@@ -173,10 +173,11 @@ body {
   z-index: 5;
   transition: transform 1.2s cubic-bezier(0.23, 1, 0.32, 1);
   border-top: 1px solid rgba(255,255,255,0.15);
+  transform: translateZ(4px);
 }
 
 .envelope-flap.open {
-  transform: rotateX(160deg);
+  transform: translateZ(4px) rotateX(160deg);
 }
 
 .envelope-paper {
@@ -195,10 +196,11 @@ body {
   padding: 2rem;
   border-radius: 4px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transform: translateZ(1px);
 }
 
 .envelope-paper.pulled {
-  transform: translateY(-80%) scale(1.05);
+  transform: translateZ(1px) translateY(-80%) scale(1.05);
 }
 
 .glass-morphism {

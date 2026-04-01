@@ -156,11 +156,12 @@ export default function UnboxingPreview() {
                   background: 'linear-gradient(to bottom, #4A5D4E 0%, #2D3A30 100%)', 
                   borderRadius: '0 0 12px 12px', zIndex: 3, 
                   borderTop: '1px solid rgba(255,255,255,0.1)', 
-                  boxShadow: '0 -5px 20px rgba(0,0,0,0.2)' 
+                  boxShadow: '0 -5px 20px rgba(0,0,0,0.2)',
+                  transform: 'translateZ(2px)'
                 }}></div>
 
                 {/* Envelope Front Body Overlay */}
-                <div style={{ position: 'absolute', inset: 0, zIndex: 4, borderRadius: '12px', background: 'linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4) 100%)', pointerEvents: 'none' }}>
+                <div style={{ position: 'absolute', inset: 0, zIndex: 4, borderRadius: '12px', background: 'linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4) 100%)', pointerEvents: 'none', transform: 'translateZ(5px)' }}>
                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
                       <motion.div 
                         initial={{ opacity: 0, y: 10 }}
