@@ -26,7 +26,6 @@ export default function UnboxingPreview() {
   const [isRSVPSubmitted, setIsRSVPSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rsvpError, setRsvpError] = useState<string | null>(null);
-  const [isCracking, setIsCracking] = useState(false);
 
   const guestOptions = [
     { value: "1", label: "Alone", detail: "Attending Alone" },
@@ -36,21 +35,20 @@ export default function UnboxingPreview() {
   ];
 
   const handleUnbox = () => {
-    setIsCracking(true);
     // Vibrate/Haptic feel (if supported)
     if (window.navigator.vibrate) window.navigator.vibrate(50);
     
     setTimeout(() => {
       setIsFlapOpen(true);
-      setIsCracking(false);
       setTimeout(() => {
         setIsPaperPulled(true);
         setTimeout(() => {
           setIsUnboxed(true);
         }, 1500);
       }, 1200);
-    }, 600); // Delay to let crackle finish
+    }, 600); // Simulate firm tactile press
   };
+
 
   const handleRSVP = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -106,13 +104,6 @@ export default function UnboxingPreview() {
 
   return (
     <div className="unboxing-container" style={{ background: '#050505', minHeight: '100vh', overflow: 'hidden' }}>
-      {/* Hidden SVG Filter for Realistic Wax Edges */}
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
-        <filter id="wax-edge">
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </svg>
       {/* Cinematic Background */}
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
         <motion.div 
@@ -166,19 +157,41 @@ export default function UnboxingPreview() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
                       >
-                        <div 
-                          className={`premium-wax-seal ${isCracking ? 'crackle-effect' : ''}`}
+                        <motion.div 
+                          className="vector-seal" 
                           style={{ margin: '0 auto' }}
+                          whileHover={{ scale: 1.05, rotate: 2 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!isFlapOpen) handleUnbox();
                           }}
                         >
-                          <div className="seal-glare"></div>
-                          <div className="seal-impression">
-                            <span className="seal-text">S <span style={{ fontSize: '1rem', margin: '0 2px' }}>&</span> J</span>
-                          </div>
-                        </div>
+                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                              <radialGradient id="wax-grad" cx="35%" cy="35%" r="65%">
+                                <stop offset="0%" stopColor="#ef233c" />
+                                <stop offset="50%" stopColor="#d90429" />
+                                <stop offset="100%" stopColor="#8d0801" />
+                              </radialGradient>
+                              <filter id="inner-shadow">
+                                <feOffset dx="0" dy="2"/>
+                                <feGaussianBlur stdDeviation="2" result="offset-blur"/>
+                                <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
+                                <feFlood floodColor="black" floodOpacity="0.7" result="color"/>
+                                <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
+                                <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+                              </filter>
+                              <filter id="drop-shadow">
+                                <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.5" />
+                              </filter>
+                            </defs>
+                            <path d="M50 2C65 1 78 8 85 18C92 28 98 42 96 55C94 68 85 80 72 88C60 95 45 98 32 94C20 89 10 78 5 65C0 52 2 35 10 22C18 10 32 3 50 2Z" fill="url(#wax-grad)" filter="url(#drop-shadow)" />
+                            <circle cx="50" cy="50" r="34" fill="url(#wax-grad)" filter="url(#inner-shadow)" />
+                            <circle cx="50" cy="50" r="32" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                          </svg>
+                          <span className="vector-seal-text">S <span style={{ fontSize: '1rem', margin: '0 2px' }}>&</span> J</span>
+                        </motion.div>
                         <p style={{ marginTop: '3rem', letterSpacing: '0.4em', fontSize: '0.65rem', color: 'var(--accent)', fontWeight: 800 }}>BREAK THE SEAL</p>
                         <h2 style={{ marginTop: '0.8rem', fontFamily: 'var(--font-serif)', fontSize: '1.1rem', opacity: 0.7 }}>For You</h2>
                       </motion.div>
