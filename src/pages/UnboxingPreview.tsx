@@ -17,6 +17,9 @@ export default function UnboxingPreview() {
   const navigate = useNavigate();
   const { data } = useInvitation();
   const [isDetailsRevealed, setIsDetailsRevealed] = useState(false);
+  const [isUnboxed, setIsUnboxed] = useState(false);
+  const [isFlapOpen, setIsFlapOpen] = useState(false);
+  const [isPaperPulled, setIsPaperPulled] = useState(false);
   const [guests, setGuests] = useState("1");
   const [showRSVP, setShowRSVP] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -31,6 +34,23 @@ export default function UnboxingPreview() {
     { value: "3", label: "3", detail: "Two Guests (+2)" },
     { value: "4", label: "4", detail: "Three Guests (+3)" }
   ];
+
+  const handleUnbox = () => {
+    // Vibrate/Haptic feel (if supported)
+    if (window.navigator.vibrate) window.navigator.vibrate(50);
+    
+    setTimeout(() => {
+      setIsFlapOpen(true);
+      setTimeout(() => {
+        setIsPaperPulled(true);
+        setTimeout(() => {
+          setIsUnboxed(true);
+          // Wait a tiny bit and then reveal details automatically for the smooth botanical scroll
+          setTimeout(() => setIsDetailsRevealed(true), 1500);
+        }, 1500);
+      }, 1200);
+    }, 600); // Simulate firm tactile press
+  };
 
 
   const handleRSVP = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,6 +133,123 @@ export default function UnboxingPreview() {
         </div>
       </div>
 
+      <AnimatePresence mode="wait">
+        {!isUnboxed ? (
+          /* CINEMATIC UNBOXING STAGE (SAGE GREEN ENVELOPE) */
+          <motion.div 
+            key="unboxing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            transition={{ duration: 1 }}
+            className="unboxing-stage"
+            style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              minHeight: '100vh',
+              position: 'relative',
+              background: '#f8f8f8' // Soft bright background behind the green envelope matching references
+            }}
+          >
+            <div className="envelope-3d" onClick={!isFlapOpen ? handleUnbox : undefined}>
+              <motion.div 
+                className="envelope-container"
+                initial={{ rotateX: 45, y: 100 }}
+                animate={{ rotateX: isFlapOpen ? 0 : 15, y: isFlapOpen ? 50 : 0 }}
+                transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1] }}
+                style={{ 
+                  width: '380px', 
+                  height: '260px', 
+                  background: 'linear-gradient(135deg, #42584A 0%, #2A382E 100%)', // Rich Sage/Emerald base
+                  borderRadius: '6px',
+                  boxShadow: '0 50px 100px rgba(0,0,0,0.5)',
+                  position: 'relative',
+                  transformStyle: 'preserve-3d',
+                  cursor: !isFlapOpen ? 'pointer' : 'default',
+                  margin: '0 auto'
+                }}
+              >
+                {/* Envelope Flap */}
+                <div 
+                  style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '55%',
+                    background: 'linear-gradient(135deg, #4A6353 0%, #304134 100%)', // Slightly lighter for top lighting
+                    clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
+                    transformOrigin: 'top', zIndex: 5,
+                    borderTop: '1px solid rgba(255,255,255,0.15)',
+                    transform: isFlapOpen ? 'rotateX(160deg)' : 'rotateX(0deg)',
+                    transition: 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)'
+                  }}
+                ></div>
+                
+                {/* Premium Inside Paper */}
+                <div 
+                  style={{
+                    position: 'absolute', bottom: '10px', left: '5%', width: '90%', height: '90%',
+                    background: '#f4eedd', zIndex: 2, borderRadius: '4px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                    display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+                    transform: isPaperPulled ? 'translateY(-80%) scale(1.05)' : 'translateY(0) scale(1)',
+                    transition: 'transform 1.5s cubic-bezier(0.23, 1, 0.32, 1)'
+                  }}
+                >
+                   <h3 className="serif" style={{ color: '#2A382E', fontSize: '1.2rem', marginBottom: '1rem' }}>You're Invited</h3>
+                   <div style={{ width: '30px', height: '1px', background: '#D4AF37', opacity: 0.5 }}></div>
+                </div>
+
+                {/* Envelope Front Body Shadow (The folded overlap) */}
+                <div style={{ position: 'absolute', inset: 0, zIndex: 4, borderRadius: '6px', background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.15) 100%)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                   <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <motion.div 
+                          style={{ margin: '0 auto', width: '90px', height: '90px', position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.6))' }}
+                          whileHover={{ scale: 1.05, rotate: 2 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style={{position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1}}>
+                            <defs>
+                              <radialGradient id="gold-grad" cx="30%" cy="30%" r="70%">
+                                <stop offset="0%" stopColor="#FFF7D6" />
+                                <stop offset="20%" stopColor="#D4AF37" />
+                                <stop offset="50%" stopColor="#C59F2A" />
+                                <stop offset="85%" stopColor="#8A6B1C" />
+                                <stop offset="100%" stopColor="#4A380A" />
+                              </radialGradient>
+                              <filter id="gold-inner-shadow">
+                                <feOffset dx="0" dy="2"/>
+                                <feGaussianBlur stdDeviation="1.5" result="offset-blur"/>
+                                <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
+                                <feFlood floodColor="#4A380A" floodOpacity="0.9" result="color"/>
+                                <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
+                                <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+                              </filter>
+                              <filter id="gold-drop-shadow">
+                                <feDropShadow dx="0" dy="5" stdDeviation="5" floodOpacity="0.5" />
+                              </filter>
+                            </defs>
+                            <path d="M50 2C65 1 78 8 85 18C92 28 98 42 96 55C94 68 85 80 72 88C60 95 45 98 32 94C20 89 10 78 5 65C0 52 2 35 10 22C18 10 32 3 50 2Z" fill="url(#gold-grad)" filter="url(#gold-drop-shadow)" />
+                            <circle cx="50" cy="50" r="34" fill="url(#gold-grad)" filter="url(#gold-inner-shadow)" />
+                            <circle cx="50" cy="50" r="31" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="0.8" />
+                          </svg>
+                          <span style={{ position: 'relative', zIndex: 2, fontFamily: 'var(--font-serif)', color: '#4A380A', fontSize: '1.5rem', fontStyle: 'italic', fontWeight: 700, textShadow: '-1px -1px 0 rgba(255,255,255,0.4), 1px 1px 2px rgba(0,0,0,0.3)' }}>
+                            S<span style={{fontSize: '0.8rem', margin: '0 2px'}}>&</span>J
+                          </span>
+                        </motion.div>
+                        <p style={{ marginTop: '2rem', letterSpacing: '0.4em', fontSize: '0.65rem', color: '#8A6B1C', fontWeight: 800, textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Click to open...</p>
+                      </motion.div>
+                   </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        ) : (
+          /* DETAILS REVEALED STAGE (Ethereal Botanical Hero) */
+          <motion.div key="invite" initial={{opacity:0}} animate={{opacity:1}} transition={{duration: 1.5}}>
       {/* Hero Section */}
       <motion.div 
         animate={{ y: isDetailsRevealed ? -100 : 0 }} 
@@ -257,6 +394,9 @@ export default function UnboxingPreview() {
                 </motion.div>
               )}
             </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
