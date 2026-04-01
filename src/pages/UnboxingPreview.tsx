@@ -9,7 +9,6 @@ import {
   Mail,
   Users,
   X,
-  Heart,
   Volume2,
   VolumeX
 } from 'lucide-react';
@@ -107,6 +106,13 @@ export default function UnboxingPreview() {
 
   return (
     <div className="unboxing-container" style={{ background: '#050505', minHeight: '100vh', overflow: 'hidden' }}>
+      {/* Hidden SVG Filter for Realistic Wax Edges */}
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <filter id="wax-edge">
+          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
       {/* Cinematic Background */}
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
         <motion.div 
@@ -161,27 +167,19 @@ export default function UnboxingPreview() {
                         transition={{ delay: 0.5 }}
                       >
                         <div 
-                          className={`wax-seal-heart ${isCracking ? 'crackle-effect' : ''}`}
+                          className={`premium-wax-seal ${isCracking ? 'crackle-effect' : ''}`}
                           style={{ margin: '0 auto' }}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!isFlapOpen) handleUnbox();
                           }}
                         >
-                          <motion.div
-                            whileHover={{ scale: 1.1, rotate: 5 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="heart-relief"
-                          >
-                            <Heart 
-                              size={42} 
-                              fill="currentColor" 
-                              strokeWidth={1}
-                              style={{ opacity: 0.9 }}
-                            />
-                          </motion.div>
+                          <div className="seal-glare"></div>
+                          <div className="seal-impression">
+                            <span className="seal-text">S <span style={{ fontSize: '1rem', margin: '0 2px' }}>&</span> J</span>
+                          </div>
                         </div>
-                        <p style={{ marginTop: '2.5rem', letterSpacing: '0.4em', fontSize: '0.65rem', color: 'var(--accent)', fontWeight: 800 }}>OPEN WITH LOVE</p>
+                        <p style={{ marginTop: '3rem', letterSpacing: '0.4em', fontSize: '0.65rem', color: 'var(--accent)', fontWeight: 800 }}>BREAK THE SEAL</p>
                         <h2 style={{ marginTop: '0.8rem', fontFamily: 'var(--font-serif)', fontSize: '1.1rem', opacity: 0.7 }}>For You</h2>
                       </motion.div>
                    </div>

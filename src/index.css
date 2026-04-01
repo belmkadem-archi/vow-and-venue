@@ -233,50 +233,111 @@ body {
   opacity: 0.3;
 }
 
-/* Heart Wax Seal Styling */
-.wax-seal-heart {
-  width: 100px;
-  height: 100px;
-  background: radial-gradient(circle at 30% 30%, #be123c 0%, #881337 100%);
-  border-radius: 50% 45% 52% 48% / 48% 52% 45% 55%; /* Irregular wax shape */
+/* High-Fidelity 3D Dynamic Wax Seal */
+.premium-wax-seal {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(120% 120% at 30% 30%, #ec1148 0%, #a4082c 40%, #5d0419 100%);
+  filter: url(#wax-edge) drop-shadow(0 15px 25px rgba(0,0,0,0.8));
   position: relative;
-  box-shadow: 
-    0 10px 25px rgba(0,0,0,0.4),
-    inset 0 -5px 15px rgba(0,0,0,0.5),
-    inset 0 5px 15px rgba(255,255,255,0.1);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   transform-style: preserve-3d;
-  border: 1px solid rgba(159, 18, 57, 0.3);
-}
-
-.wax-seal-heart:hover {
-  transform: scale(1.05) translateY(-5px);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  /* The raised outer lip of the wax with specular highlights */
   box-shadow: 
-    0 20px 40px rgba(0,0,0,0.5),
-    inset 0 -5px 15px rgba(0,0,0,0.5);
+    inset 0 4px 8px rgba(255, 255, 255, 0.4),
+    inset 0 -6px 15px rgba(0, 0, 0, 0.9),
+    inset 0 0 15px rgba(0,0,0,0.6);
 }
 
-.wax-seal-heart:active {
-  transform: scale(0.92) translateY(2px);
+.premium-wax-seal:hover {
+  transform: scale(1.05) translateY(-5px) rotate(2deg);
   box-shadow: 
-    0 5px 10px rgba(0,0,0,0.4),
-    inset 0 -2px 8px rgba(0,0,0,0.5);
+    inset 0 4px 10px rgba(255, 255, 255, 0.5),
+    inset 0 -6px 15px rgba(0, 0, 0, 0.9),
+    inset 0 0 15px rgba(0,0,0,0.6);
 }
 
-.heart-relief {
-  color: var(--accent);
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
-  opacity: 0.9;
-  transition: all 0.3s ease;
+.premium-wax-seal:active {
+  transform: scale(0.95) translateY(2px);
+  filter: url(#wax-edge) drop-shadow(0 5px 10px rgba(0,0,0,0.8));
 }
 
-.wax-seal-heart:hover .heart-relief {
-  transform: scale(1.1);
-  opacity: 1;
+/* Inner stamped depression area */
+.seal-impression {
+  position: absolute;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: radial-gradient(100% 100% at 50% 50%, #890924 0%, #a4082c 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px;
+  box-shadow: 
+    inset 0 5px 10px rgba(0,0,0,0.7),     /* Deep indent shadow top */
+    inset 0 -3px 6px rgba(255,255,255,0.2), /* Subtle indent highlight bottom */
+    0 2px 3px rgba(255,255,255,0.3);      /* The ridge casting light */
+}
+
+/* Dynamic embossed text */
+.seal-text {
+  position: relative;
+  z-index: 10;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  color: #c9113a; /* Exact color of highlight for emboss */
+  font-size: 1.6rem;
+  line-height: 1;
+  text-align: center;
+  letter-spacing: -0.05em;
+  /* Text-shadow trick for perfect engraving */
+  text-shadow: 
+    -1px -1px 1px rgba(0, 0, 0, 0.6),    /* Highlight edge */
+     1px  1px 1px rgba(255, 255, 255, 0.3); /* Shadow inside */
+}
+
+.seal-text-small {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Ambient light reflection */
+.premium-wax-seal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Animated Glare Sweep */
+@keyframes glare-sweep {
+  0% { left: -150%; }
+  100% { left: 150%; }
+}
+
+.seal-glare {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  animation: glare-sweep 4s infinite 2s ease-in-out;
+  pointer-events: none;
+  z-index: 20;
+  border-radius: 50%;
+  mix-blend-mode: overlay;
 }
 
 .crackle-effect {
@@ -284,9 +345,9 @@ body {
 }
 
 @keyframes crackle {
-  0% { transform: scale(1); filter: brightness(1); }
-  50% { transform: scale(0.95) rotate(2deg); filter: brightness(1.2); }
-  100% { transform: scale(1.05); filter: brightness(1); }
+  0% { transform: scale(1); filter: url(#wax-edge) brightness(1); }
+  50% { transform: scale(0.95) rotate(2deg); filter: url(#wax-edge) brightness(1.2); }
+  100% { transform: scale(1.05); filter: url(#wax-edge) brightness(1); }
 }
 
 /* Theme: Ethereal Gold (Classic Stationery) */
