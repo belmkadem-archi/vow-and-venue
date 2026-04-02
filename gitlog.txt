@@ -1,0 +1,6 @@
+445a404 Rebuild Unboxing Experience: High-end Sage Green / Gold vector wax seal animation
+2d27365 Fix critical floral badge cutoff and implement mobile-first centered desktop view for ultra-wide monitors
+6519045 Completely overhaul design to Ethereal Botanical layout, replace unboxing with elegant floral badge and scrolling timeline
+c9ab16d Replace broken CSS filter seal with robust vector SVG and Framer Motion
+9a86398 Implement premium 3D dynamic CSS wax seal with animated glare and embossed text
+ec9c7d1 Add Terms, Privacy, and Refund policies for compliance
