@@ -1,25 +1,7 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useInvitation } from '../InvitationContext';
 import { supabase } from '../lib/supabase';
-import { 
-  ArrowLeft, 
-  Sparkles, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  Music as MusicIcon, 
-  Type, 
-  Mail,
-  Heart,
-  Loader2,
-  Link as LinkIcon,
-  Trash2,
-  PlusCircle,
-  Gift,
-  Layout
-} from 'lucide-react';
 
 type TabType = 'details' | 'design' | 'extras';
 
@@ -27,9 +9,11 @@ export default function BuilderPage() {
   const navigate = useNavigate();
   const { data, updateData } = useInvitation();
   const [activeTab, setActiveTab] = useState<TabType>('details');
+  const [showDress, setShowDress] = useState(!!data.dress_code);
+  const [showGift, setShowGift] = useState(!!data.gift_info?.message);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     updateData({ [e.target.name]: e.target.value });
   };
 
@@ -39,7 +23,7 @@ export default function BuilderPage() {
 
   const addTimelineItem = () => {
     updateData({ 
-      timeline_items: [...data.timeline_items, { time: '12:00', title: 'New Event', description: 'Enter details...' }] 
+      timeline_items: [...data.timeline_items, { time: '12:00 PM', title: 'New Event', description: 'Description' }] 
     });
   };
 
@@ -57,7 +41,7 @@ export default function BuilderPage() {
 
   const addFAQItem = () => {
     updateData({ 
-      faq_items: [...data.faq_items, { question: 'New Question?', answer: 'Enter answer...' }] 
+      faq_items: [...data.faq_items, { question: 'New Question?', answer: 'Your answer here.' }] 
     });
   };
 
@@ -73,7 +57,7 @@ export default function BuilderPage() {
     updateData({ faq_items: newItems });
   };
 
-  const handleGenerateLink = async () => {
+  const handlePublish = async () => {
     setIsGenerating(true);
     try {
       const { data: invite, error } = await supabase
@@ -84,16 +68,16 @@ export default function BuilderPage() {
           date: data.date,
           time: data.time,
           venue: data.venue,
-          mapsLink: data.mapsLink,
-          soundtrack: data.soundtrack,
+          mapsLink: data.mapsLink || '',
+          soundtrack: data.soundtrack || '',
           personalMessage: data.personalMessage,
           template: data.template,
           timeline_items: data.timeline_items,
           faq_items: data.faq_items,
-          gift_info: data.gift_info,
-          dress_code: data.dress_code,
+          gift_info: showGift ? data.gift_info : {},
+          dress_code: showDress ? data.dress_code : '',
           rsvp_deadline: data.rsvp_deadline,
-          hostEmail: data.hostEmail,
+          hostEmail: data.hostEmail || '',
           is_premium: false
         }])
         .select()
@@ -109,267 +93,331 @@ export default function BuilderPage() {
     }
   };
 
+  // Helper to construct names from 'hostNames' (splitting by &) if needed, 
+  // or just using the string. The MVP HTML splits them to P1 and P2.
+  const names = data.hostNames.split('&').map(n => n.trim());
+  const p1 = names[0] || 'Partner 1';
+  const p2 = names[1] || 'Partner 2';
+
+  const handleNameChange = (val1: string, val2: string) => {
+    updateData({ hostNames: `${val1} & ${val2}` });
+  };
+
+  // Live Preview Construction
+  const dt = new Date(`${data.date}T${data.time}`);
+  const dateStr = isNaN(dt.getTime()) ? 'DATE PENDING' : dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+  const timeStr = isNaN(dt.getTime()) ? 'TIME PENDING' : dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
   return (
-    <div className="builder-layout" style={{ background: '#030303' }}>
-      <motion.aside 
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-        className="builder-sidebar"
-        style={{ borderRight: '1px solid var(--border)' }}
-      >
-        <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem 2rem', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button onClick={() => navigate('/templates')} className="btn-secondary" style={{ padding: '0.4rem', border: 'none' }}>
-              <ArrowLeft size={18} />
+    <div id="view-builder" className="view active">
+      <div className="builder-wrap">
+        
+        {/* SIDEBAR */}
+        <div className="builder-sidebar">
+          <div className="builder-header">
+            <h2>Your Invitation</h2>
+            <button className="btn btn-sm btn-outline" onClick={() => navigate('/')}>← Back</button>
+          </div>
+          
+          <div className="builder-tabs">
+            <div className={`builder-tab ${activeTab === 'details' ? 'active' : ''}`} onClick={() => setActiveTab('details')}>Details</div>
+            <div className={`builder-tab ${activeTab === 'design' ? 'active' : ''}`} onClick={() => setActiveTab('design')}>Design</div>
+            <div className={`builder-tab ${activeTab === 'extras' ? 'active' : ''}`} onClick={() => setActiveTab('extras')}>Extras</div>
+          </div>
+
+          {activeTab === 'details' && (
+            <div className="builder-panel active">
+              <div className="section-label">Couple</div>
+              <div className="field-row">
+                <div className="field-group">
+                  <label className="field-label">Partner 1</label>
+                  <input className="field-input" value={p1} onChange={(e) => handleNameChange(e.target.value, p2)} />
+                </div>
+                <div className="field-group">
+                  <label className="field-label">Partner 2</label>
+                  <input className="field-input" value={p2} onChange={(e) => handleNameChange(p1, e.target.value)} />
+                </div>
+              </div>
+              
+              <div className="section-label">Date and Time</div>
+              <div className="field-row">
+                <div className="field-group">
+                  <label className="field-label">Date</label>
+                  <input className="field-input" name="date" type="date" value={data.date} onChange={handleChange} />
+                </div>
+                <div className="field-group">
+                  <label className="field-label">Time</label>
+                  <input className="field-input" name="time" type="time" value={data.time} onChange={handleChange} />
+                </div>
+              </div>
+              
+              <div className="section-label">Venue</div>
+              <div className="field-group">
+                <label className="field-label">Venue name</label>
+                <input className="field-input" name="venue" value={data.venue} onChange={handleChange} />
+              </div>
+              <div className="field-group">
+                <label className="field-label">Address</label>
+                <input className="field-input" name="mapsLink" placeholder="e.g. 12 Rue du Jardin" value={data.mapsLink} onChange={handleChange} />
+              </div>
+              
+              <div className="section-label">Day timeline</div>
+              <div id="timeline-items">
+                {data.timeline_items.map((item, index) => (
+                  <div className="timeline-item" key={index}>
+                    <div className="timeline-item-header">
+                      <span className="timeline-item-title">Item {index + 1}</span>
+                      <button className="remove-btn" onClick={() => removeTimelineItem(index)}>✕</button>
+                    </div>
+                    <div className="field-row">
+                      <div className="field-group" style={{ marginBottom: '8px' }}>
+                        <label className="field-label">Time</label>
+                        <input className="field-input" value={item.time} onChange={(e) => updateTimelineItem(index, 'time', e.target.value)} />
+                      </div>
+                      <div className="field-group" style={{ marginBottom: '8px' }}>
+                        <label className="field-label">Title</label>
+                        <input className="field-input" value={item.title} onChange={(e) => updateTimelineItem(index, 'title', e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="field-group" style={{ marginBottom: 0 }}>
+                      <label className="field-label">Description</label>
+                      <input className="field-input" value={item.description} onChange={(e) => updateTimelineItem(index, 'description', e.target.value)} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button className="add-btn" onClick={addTimelineItem}>+ Add timeline item</button>
+              
+              <div className="section-label" style={{ marginTop: '24px' }}>FAQs</div>
+              <div id="faq-items">
+                {data.faq_items.map((item, index) => (
+                  <div className="faq-item" key={index}>
+                    <div className="timeline-item-header">
+                      <span className="timeline-item-title">FAQ {index + 1}</span>
+                      <button className="remove-btn" onClick={() => removeFAQItem(index)}>✕</button>
+                    </div>
+                    <div className="field-group" style={{ marginBottom: '8px' }}>
+                      <label className="field-label">Question</label>
+                      <input className="field-input" value={item.question} onChange={(e) => updateFAQItem(index, 'question', e.target.value)} />
+                    </div>
+                    <div className="field-group" style={{ marginBottom: 0 }}>
+                      <label className="field-label">Answer</label>
+                      <textarea className="field-input" rows={2} style={{ resize: 'vertical' }} value={item.answer} onChange={(e) => updateFAQItem(index, 'answer', e.target.value)} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button className="add-btn" onClick={addFAQItem}>+ Add FAQ</button>
+            </div>
+          )}
+
+          {activeTab === 'design' && (
+            <div className="builder-panel active">
+              <div className="section-label">Template</div>
+              <div className="template-grid">
+                <div className={`template-opt ${data.template === 'garden' ? 'selected' : ''}`} onClick={() => updateData({ template: 'garden' })}>
+                  <div className="template-thumb" style={{ background: 'linear-gradient(135deg,#e8f0e4,#f5f0e8)' }}>🌿</div>
+                  <div className="template-name">Garden of Eden</div>
+                </div>
+                <div className={`template-opt ${data.template === 'golden' ? 'selected' : ''}`} onClick={() => updateData({ template: 'golden' })}>
+                  <div className="template-thumb" style={{ background: 'linear-gradient(135deg,#1c1a18,#2a2520)', color: '#c9a96e', fontSize: '28px' }}>✦</div>
+                  <div className="template-name">Golden Night</div>
+                </div>
+                <div className={`template-opt ${data.template === 'rose' ? 'selected' : ''}`} onClick={() => updateData({ template: 'rose' })}>
+                  <div className="template-thumb" style={{ background: 'linear-gradient(135deg,#f9eff5,#ede0ec)' }}>🌸</div>
+                  <div className="template-name">Rose Bloom</div>
+                </div>
+                <div className={`template-opt ${data.template === 'ivory' ? 'selected' : ''}`} onClick={() => updateData({ template: 'ivory' })}>
+                  <div className="template-thumb" style={{ background: 'linear-gradient(135deg,#faf6f0,#f5ede0)' }}>🕊️</div>
+                  <div className="template-name">Ivory Classic</div>
+                </div>
+              </div>
+              
+              <div className="section-label">Options</div>
+              <div className="toggle-row">
+                <span className="toggle-label">Save the date button</span>
+                <label className="toggle"><input type="checkbox" defaultChecked /><span className="toggle-slider"></span></label>
+              </div>
+              <div className="toggle-row">
+                <span className="toggle-label">Show dress code</span>
+                <label className="toggle"><input type="checkbox" checked={showDress} onChange={(e) => setShowDress(e.target.checked)} /><span className="toggle-slider"></span></label>
+              </div>
+              {showDress && (
+                <div className="field-group" style={{ marginTop: '12px' }}>
+                  <label className="field-label">Dress code</label>
+                  <input className="field-input" name="dress_code" value={data.dress_code} onChange={handleChange} />
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'extras' && (
+            <div className="builder-panel active">
+              <div className="section-label">Gift information</div>
+              <div className="toggle-row">
+                <span className="toggle-label">Show gift info</span>
+                <label className="toggle"><input type="checkbox" checked={showGift} onChange={(e) => setShowGift(e.target.checked)} /><span className="toggle-slider"></span></label>
+              </div>
+              {showGift && (
+                <div>
+                  <div className="field-group" style={{ marginTop: '12px' }}>
+                    <label className="field-label">Gift message</label>
+                    <textarea className="field-input" rows={3} value={data.gift_info.message} onChange={(e) => handleGiftChange('message', e.target.value)} style={{ resize: 'vertical' }} />
+                  </div>
+                  <div className="field-row">
+                    <div className="field-group">
+                      <label className="field-label">Bank</label>
+                      <input className="field-input" placeholder="Bank name" value={data.gift_info.bankName || ''} onChange={(e) => handleGiftChange('bankName', e.target.value)} />
+                    </div>
+                    <div className="field-group">
+                      <label className="field-label">Account holder</label>
+                      <input className="field-input" value={data.gift_info.accountHolder || ''} onChange={(e) => handleGiftChange('accountHolder', e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="field-group">
+                    <label className="field-label">IBAN</label>
+                    <input className="field-input" placeholder="XX00 0000 0000 0000" value={data.gift_info.iban || ''} onChange={(e) => handleGiftChange('iban', e.target.value)} />
+                  </div>
+                </div>
+              )}
+              
+              <div className="section-label">Personal message</div>
+              <div className="field-group">
+                <label className="field-label">Message to guests</label>
+                <textarea className="field-input" name="personalMessage" rows={3} value={data.personalMessage} onChange={handleChange} style={{ resize: 'vertical' }} />
+              </div>
+              
+              <div className="section-label">RSVP deadline</div>
+              <div className="field-group">
+                <label className="field-label">RSVP by</label>
+                <input className="field-input" name="rsvp_deadline" type="date" value={data.rsvp_deadline} onChange={handleChange} />
+              </div>
+            </div>
+          )}
+
+          <div style={{ padding: '20px 28px', borderTop: '1px solid var(--border)', background: '#fff', position: 'sticky', bottom: 0 }}>
+            <button className="btn btn-green" style={{ width: '100%', justifyContent: 'center', fontSize: '14px', padding: '13px' }} onClick={handlePublish} disabled={isGenerating}>
+              {isGenerating ? 'Publishing...' : 'Publish and share invitation'}
             </button>
-            <div className="logo" style={{ fontSize: '0.9rem', letterSpacing: '0.2em' }}>
-              <Sparkles className="logo-icon" size={16} />
-              <span>ETERNAL</span>
+          </div>
+        </div>
+
+        {/* PREVIEW FRAME */}
+        <div className="builder-preview">
+          <div className="preview-bar">
+            <span className="preview-bar-title">LIVE PREVIEW</span>
+            <div className="preview-actions">
+              <button className="btn btn-sm btn-gold" onClick={handlePublish}>Publish</button>
+            </div>
+          </div>
+          
+          <div className="preview-scroll">
+            <div className="inv-frame">
+              {/* Actual Invitation Rendering component logic inline for preview */}
+              <div className={`t-${data.template}`}>
+                <div className="inv-cover">
+                  <div className="inv-cover-bg"></div>
+                  <div className="inv-cover-content">
+                    <div className="inv-eyebrow">You are invited to celebrate</div>
+                    <div className="inv-names">{p1}</div>
+                    <div className="inv-and">&amp;</div>
+                    <div className="inv-names">{p2}</div>
+                    <div className="inv-divider"></div>
+                    <div className="inv-date-line">{dateStr} · {timeStr}</div>
+                  </div>
+                </div>
+                
+                <div className="inv-body">
+                  <div className="inv-section">
+                    <div className="inv-section-title">Venue</div>
+                    <div className="inv-venue">{data.venue}</div>
+                    <div className="inv-address">{data.mapsLink}</div>
+                    <button className="inv-map-btn" onClick={(e) => e.preventDefault()}>📍 View on map</button>
+                  </div>
+                  
+                  {data.personalMessage && (
+                    <div className="inv-section">
+                      <div className="inv-section-title">A message for you</div>
+                      <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', fontStyle: 'italic', lineHeight: 1.6, opacity: 0.8, fontWeight: 300 }}>
+                        "{data.personalMessage}"
+                      </p>
+                    </div>
+                  )}
+                  
+                  {data.timeline_items.length > 0 && (
+                    <div className="inv-section">
+                      <div className="inv-section-title">Day timeline</div>
+                      {data.timeline_items.map((it, i) => (
+                        <div className="inv-tl-item" key={i}>
+                          <div className="inv-tl-dot"></div>
+                          <div>
+                            <div className="inv-tl-time">{it.time}</div>
+                            <div className="inv-tl-title">{it.title}</div>
+                            <div className="inv-tl-desc">{it.description}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {data.faq_items.length > 0 && (
+                    <div className="inv-section">
+                      <div className="inv-section-title">FAQs</div>
+                      {data.faq_items.map((f, i) => (
+                        <div className="inv-faq" key={i}>
+                          <div className="inv-faq-q">{f.question}</div>
+                          <div className="inv-faq-a">{f.answer}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {showDress && data.dress_code && (
+                    <div className="inv-section">
+                      <div className="inv-section-title">Dress code</div>
+                      <p style={{ fontSize: '14px', fontWeight: 500 }}>{data.dress_code}</p>
+                    </div>
+                  )}
+                  
+                  {showGift && (
+                    <div className="inv-section">
+                      <div className="inv-section-title">Gift</div>
+                      <p style={{ fontSize: '13px', opacity: 0.7, lineHeight: 1.7, marginBottom: (data.gift_info.iban ? '12px' : '0'), fontWeight: 300 }}>
+                        {data.gift_info.message}
+                      </p>
+                      {data.gift_info.iban && (
+                        <div style={{ background: 'var(--warm)', borderRadius: '8px', padding: '12px', fontSize: '12px' }}>
+                          <div style={{ opacity: 0.6, marginBottom: '4px' }}>
+                            {(data.gift_info.bankName || 'Bank')} · {data.gift_info.accountHolder}
+                          </div>
+                          <div style={{ fontWeight: 500, letterSpacing: '.05em' }}>
+                            {data.gift_info.iban}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="inv-rsvp-section">
+                  <div className="inv-rsvp-title">Will you join us?</div>
+                  <div className="inv-rsvp-sub">Please RSVP</div>
+                  <input className="inv-input" placeholder="Your full name" style={{ border: '1px solid var(--border)', background: 'var(--cream)' }} disabled />
+                  <input className="inv-input" placeholder="Your email" style={{ border: '1px solid var(--border)', background: 'var(--cream)' }} disabled />
+                  <div className="rsvp-btns">
+                    <button className="rsvp-choice yes" type="button" disabled>✓ Joyfully attending</button>
+                    <button className="rsvp-choice no" type="button" disabled>✕ Regretfully decline</button>
+                  </div>
+                  <textarea className="inv-input" rows={2} style={{ resize: 'none', border: '1px solid var(--border)', background: 'var(--cream)' }} placeholder="Leave a message (optional)" disabled></textarea>
+                  <button className="inv-submit" disabled>Send my RSVP</button>
+                </div>
+                <div className="inv-footer">ETERNALVOWS.COM</div>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Tab Navigation */}
-        <div className="builder-tabs" style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
-          {(['details', 'design', 'extras'] as TabType[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                flex: 1,
-                padding: '1rem',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                background: 'transparent',
-                color: activeTab === tab ? 'var(--primary)' : 'rgba(255,255,255,0.4)',
-                border: 'none',
-                borderBottom: activeTab === tab ? '2px solid var(--primary)' : '2px solid transparent',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        <div className="sidebar-content" style={{ padding: '2rem', height: 'calc(100vh - 180px)', overflowY: 'auto' }}>
-          <AnimatePresence mode="wait">
-            {activeTab === 'details' && (
-              <motion.div
-                key="details"
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-              >
-                <section className="sidebar-section">
-                  <span className="section-label">The Essentials</span>
-                  <div className="input-group">
-                    <label><Type size={14} /> Host Names</label>
-                    <input name="hostNames" value={data.hostNames} onChange={handleChange} placeholder="Sarah & James" />
-                  </div>
-                  <div className="input-group">
-                    <label><Heart size={14} /> Event Title</label>
-                    <input name="eventTitle" value={data.eventTitle} onChange={handleChange} placeholder="Our Wedding Day" />
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '1rem' }}>
-                    <div className="input-group">
-                      <label><Calendar size={14} /> Date</label>
-                      <input name="date" type="date" value={data.date} onChange={handleChange} />
-                    </div>
-                    <div className="input-group">
-                      <label><Clock size={14} /> Time</label>
-                      <input name="time" type="time" value={data.time} onChange={handleChange} />
-                    </div>
-                  </div>
-                  <div className="input-group">
-                    <label><MapPin size={14} /> Venue Selection</label>
-                    <input name="venue" value={data.venue} onChange={handleChange} placeholder="The Grand Pavilion" />
-                  </div>
-                </section>
-
-                <section className="sidebar-section">
-                  <span className="section-label">Day-of Timeline</span>
-                  {data.timeline_items.map((item, index) => (
-                    <div key={index} className="glass" style={{ padding: '1rem', marginBottom: '1rem', borderRadius: '12px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <input 
-                          type="time" 
-                          value={item.time} 
-                          onChange={(e) => updateTimelineItem(index, 'time', e.target.value)}
-                          style={{ width: '40%', fontSize: '0.8rem' }}
-                        />
-                        <button onClick={() => removeTimelineItem(index)} style={{ color: 'rgba(255,255,255,0.3)' }}><Trash2 size={14}/></button>
-                      </div>
-                      <input 
-                        value={item.title} 
-                        onChange={(e) => updateTimelineItem(index, 'title', e.target.value)}
-                        placeholder="Title"
-                        style={{ width: '100%', marginBottom: '0.5rem', fontWeight: 600 }}
-                      />
-                      <input 
-                        value={item.description} 
-                        onChange={(e) => updateTimelineItem(index, 'description', e.target.value)}
-                        placeholder="Description"
-                        style={{ width: '100%', fontSize: '0.8rem' }}
-                      />
-                    </div>
-                  ))}
-                  <button onClick={addTimelineItem} className="btn-secondary" style={{ width: '100%', padding: '0.8rem' }}>
-                    <PlusCircle size={14} /> Add Timeline Item
-                  </button>
-                </section>
-              </motion.div>
-            )}
-
-            {activeTab === 'design' && (
-              <motion.div
-                key="design"
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-              >
-                <section className="sidebar-section">
-                  <span className="section-label">Theme Selection</span>
-                  <div className="input-group">
-                    <label><Layout size={14} /> Visual Style</label>
-                    <select name="template" value={data.template} onChange={handleChange} style={{ width: '100%' }}>
-                      <option value="ethereal-gold">Ethereal Gold</option>
-                      <option value="midnight-noir">Midnight Noir</option>
-                      <option value="botanical-glass">Botanical Glass</option>
-                    </select>
-                  </div>
-                </section>
-                <section className="sidebar-section">
-                  <span className="section-label">Atmospheric Options</span>
-                  <div className="input-group">
-                    <label><MusicIcon size={14} /> Soundtrack</label>
-                    <select name="soundtrack" value={data.soundtrack} onChange={handleChange} style={{ width: '100%' }}>
-                      <option value="Nocturne in Eb Major">Nocturne in Eb Major</option>
-                      <option value="Clair de Lune">Clair de Lune</option>
-                      <option value="Gymnopédie No. 1">Gymnopédie No. 1</option>
-                    </select>
-                  </div>
-                </section>
-              </motion.div>
-            )}
-
-            {activeTab === 'extras' && (
-              <motion.div
-                key="extras"
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-              >
-                <section className="sidebar-section">
-                  <span className="section-label">Guest Information</span>
-                  <div className="input-group">
-                    <label>Dress Code</label>
-                    <input name="dress_code" value={data.dress_code} onChange={handleChange} placeholder="Black Tie Optional" />
-                  </div>
-                  <div className="input-group">
-                    <label>RSVP Deadline</label>
-                    <input name="rsvp_deadline" type="date" value={data.rsvp_deadline} onChange={handleChange} />
-                  </div>
-                  <div className="input-group">
-                    <label>Personal Message</label>
-                    <textarea name="personalMessage" value={data.personalMessage} onChange={handleChange} rows={4} placeholder="A short note to your guests..." />
-                  </div>
-                </section>
-
-                <section className="sidebar-section">
-                  <span className="section-label">Gift Registry</span>
-                  <div className="input-group">
-                    <label><Gift size={14} /> Gift Message</label>
-                    <textarea value={data.gift_info.message} onChange={(e) => handleGiftChange('message', e.target.value)} rows={3} />
-                  </div>
-                  <div className="input-group">
-                    <label>Bank Name</label>
-                    <input value={data.gift_info.bankName} onChange={(e) => handleGiftChange('bankName', e.target.value)} />
-                  </div>
-                  <div className="input-group">
-                    <label>IBAN</label>
-                    <input value={data.gift_info.iban} onChange={(e) => handleGiftChange('iban', e.target.value)} />
-                  </div>
-                </section>
-
-                <section className="sidebar-section">
-                  <span className="section-label">FAQs</span>
-                  {data.faq_items.map((item, index) => (
-                    <div key={index} className="glass" style={{ padding: '1rem', marginBottom: '1rem', borderRadius: '12px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>QUESTION {index + 1}</span>
-                        <button onClick={() => removeFAQItem(index)} style={{ color: 'rgba(255,255,255,0.3)' }}><Trash2 size={14}/></button>
-                      </div>
-                      <input value={item.question} onChange={(e) => updateFAQItem(index, 'question', e.target.value)} placeholder="Question" style={{ width: '100%', marginBottom: '0.5rem' }} />
-                      <textarea value={item.answer} onChange={(e) => updateFAQItem(index, 'answer', e.target.value)} placeholder="Answer" rows={2} style={{ width: '100%', fontSize: '0.8rem' }} />
-                    </div>
-                  ))}
-                  <button onClick={addFAQItem} className="btn-secondary" style={{ width: '100%', padding: '0.8rem' }}>
-                    <PlusCircle size={14} /> Add FAQ
-                  </button>
-                </section>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Action Footer */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.5rem 2rem', background: '#030303', borderTop: '1px solid var(--border)' }}>
-          <div className="input-group" style={{ marginBottom: '1rem' }}>
-            <label><Mail size={12} /> Contact Email</label>
-            <input name="hostEmail" value={data.hostEmail} onChange={handleChange} placeholder="your@email.com" style={{ padding: '0.6rem' }} />
-          </div>
-          <button 
-            className="btn-primary" 
-            style={{ width: '100%', padding: '1.2rem', gap: '0.8rem' }} 
-            onClick={handleGenerateLink}
-            disabled={isGenerating}
-          >
-            {isGenerating ? <Loader2 className="animate-spin" /> : <LinkIcon size={18} />}
-            {isGenerating ? 'Generating...' : 'Finalize & Get Live Link'}
-          </button>
-        </div>
-      </motion.aside>
-
-      <main className="builder-main">
-        <div style={{ position: 'absolute', width: '600px', height: '600px', background: 'radial-gradient(circle, var(--primary-glow) 0%, transparent 70%)', opacity: 0.2, filter: 'blur(80px)', pointerEvents: 'none' }}></div>
-        <div className="phone-mockup builder-preview" style={{ border: '12px solid #1a1a1a', transform: 'perspective(1000px) rotateY(-5deg) rotateX(2deg)' }}>
-          <div className="phone-screen">
-            <AnimatePresence mode="wait">
-              <motion.div 
-                key={`${data.template}-${data.eventTitle}`}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={`editorial-layout theme-${data.template}`}
-                style={{ height: '100%', overflow: 'hidden' }}
-              >
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.05, background: 'radial-gradient(circle at top right, var(--primary), transparent)', pointerEvents: 'none' }}></div>
-                <div className="editorial-header">INVITATION</div>
-                <div className="editorial-names serif" style={{ fontSize: '2.5rem', fontWeight: 400, lineHeight: 1.1, padding: '0 1rem' }}>
-                  {data.hostNames || "Sarah & James"}
-                </div>
-                <div className="editorial-divider" style={{ width: '60px', height: '1px', background: 'var(--primary)', opacity: 0.6, margin: '2.5rem 0' }}></div>
-                <div className="editorial-title" style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4em' }}>
-                  {data.eventTitle || "Our Wedding Day"}
-                </div>
-                <div className="editorial-details" style={{ marginTop: '2.5rem' }}>
-                  <p style={{ fontWeight: 700, letterSpacing: '0.1em' }}>{data.date || "21 June 2026"}</p>
-                  <p style={{ opacity: 0.6 }}>{data.time || "18:00"}</p>
-                  <p style={{ marginTop: '1.5rem', fontSize: '0.8rem', opacity: 0.8, textTransform: 'uppercase' }}>
-                    {data.venue || "The Grand Pavilion"}
-                  </p>
-                </div>
-                <div className="editorial-flourish" style={{ marginTop: '4rem' }}>
-                  <Sparkles size={24} style={{ color: 'var(--primary)', opacity: 0.4 }} />
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-      </main>
+        
+      </div>
     </div>
   );
 }

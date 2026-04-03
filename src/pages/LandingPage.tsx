@@ -1,153 +1,180 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { 
-  CheckCircle2,
-  Sparkles,
-  Calendar,
-  Gift,
-  AlignLeft
-} from 'lucide-react';
-
-const PRICING = [
-  {
-    name: "Free",
-    price: "€0",
-    description: "Perfect for casual gatherings and small events.",
-    features: ["Standard Reveal Gates", "Basic Builder Suite", "Unlimited Guests", "RSVP Tracking", "1 Event Active"],
-    cta: "Start Free",
-    premium: false
-  },
-  {
-    name: "Essential",
-    price: "€149",
-    description: "The professional choice for weddings and galas.",
-    features: ["Everything in Free", "Day-of Timeline Manager", "Guest FAQ Accordions", "Gift Registry Manager", "Remove Watermark"],
-    cta: "Go Essential",
-    premium: true,
-    popular: true
-  },
-  {
-    name: "Premium",
-    price: "€349",
-    description: "A tailored digital masterpiece for high-end events.",
-    features: ["Everything in Essential", "Custom Domain Name", "White-glove Design Support", "Advanced Analytics", "Priority Support"],
-    cta: "Go Premium",
-    premium: true
-  }
-];
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+
+  const handleScrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <div className="landing-container" style={{ background: '#050505', minHeight: '100vh', color: '#fff' }}>
-      
-      {/* Navigation */}
-      <nav className="glass" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, borderBottom: '1px solid var(--border)' }}>
-        <div className="container" style={{ height: '80px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.2rem', fontWeight: 500, letterSpacing: '0.1em' }}>
-            <Sparkles size={20} color="var(--accent)" />
-            <span>ETERNALVOWS</span>
-          </div>
-          <div style={{ display: 'flex', gap: '3rem', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            <a href="#pricing" style={{ color: '#fff', textDecoration: 'none' }}>Pricing</a>
-            <Link to="/templates" className="btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '4px' }}>Create Masterpiece</Link>
-          </div>
+    <div id="view-landing" className="view active">
+      {/* Global Nav for Landing */}
+      <nav className="global-nav">
+        <a href="/" className="nav-logo">Eternal<span>Vows</span></a>
+        <div className="nav-links">
+          <a onClick={() => handleScrollTo('features')}>Features</a>
+          <a onClick={() => handleScrollTo('templates')}>Templates</a>
+          <a onClick={() => handleScrollTo('pricing')}>Pricing</a>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="btn btn-outline btn-sm" onClick={() => navigate('/builder')}>Sign in</button>
+          <button className="btn btn-dark btn-sm" onClick={() => navigate('/builder')}>Start free</button>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="hero-section container">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }}>
-          <span style={{ fontSize: '0.7rem', letterSpacing: '0.4em', color: 'var(--accent)', textTransform: 'uppercase' }}>THE HIGHEST EVOLUTION OF INVITATIONS</span>
-          <h1 className="hero-title" style={{ marginTop: '2rem' }}>Beyond Paper.<br/><span style={{ fontStyle: 'italic' }}>Beyond Ordinary.</span></h1>
-          <p className="hero-subtitle">Elevate your wedding with an editorial unboxing experience. Digital invitations designed for the world's most beautiful love stories.</p>
-          <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center' }}>
-            <Link to="/templates" className="btn-primary">Get Started</Link>
-            <a href="#pricing" className="btn-secondary">View Pricing</a>
+      <div className="hero">
+        <div className="hero-bg"></div>
+        <div className="hero-deco tl">❧</div>
+        <div className="hero-deco br">❧</div>
+        <div className="hero-content">
+          <div className="hero-eyebrow">Digital Wedding Invitations</div>
+          <h1 className="hero-title">Your love story<br />deserves a <em>beautiful</em><br />beginning</h1>
+          <p className="hero-sub">Create stunning digital wedding invitations in minutes. Share with all your guests in one link. Collect RSVPs effortlessly.</p>
+          <div className="hero-actions">
+            <button className="btn btn-dark" onClick={() => navigate('/builder')} style={{ fontSize: '14px', padding: '14px 32px' }}>Create your invitation</button>
+            <button className="btn btn-outline" onClick={() => navigate('/builder')} style={{ fontSize: '14px', padding: '14px 32px' }}>See a live demo</button>
           </div>
-        </motion.div>
-      </section>
-
-      {/* Pricing Tiers */}
-      <section id="pricing" className="container" style={{ padding: '160px 0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-          <h2 className="serif" style={{ fontSize: '3.5rem' }}>Elegance for Every Love Story</h2>
-          <p style={{ color: 'var(--text-dim)', fontSize: '1.2rem', marginTop: '1.5rem' }}>Simple, transparent pricing to power your celebration.</p>
+          <div className="hero-stats">
+            <div><div className="stat-num">10k+</div><div className="stat-lbl">Couples</div></div>
+            <div><div className="stat-num">4.9★</div><div className="stat-lbl">Rating</div></div>
+            <div><div className="stat-num">98%</div><div className="stat-lbl">RSVP rate</div></div>
+            <div><div className="stat-num">5 min</div><div className="stat-lbl">To publish</div></div>
+          </div>
         </div>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem' }}>
-          {PRICING.map((plan, i) => (
-            <motion.div 
-              key={i} 
-              className="glass" 
-              style={{ 
-                padding: '4rem 3rem', 
-                borderRadius: '8px', 
-                position: 'relative', 
-                display: 'flex', 
-                flexDirection: 'column',
-                border: plan.popular ? '1px solid var(--accent)' : '1px solid var(--border)'
-              }}
-            >
-              {plan.popular && <span style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: 'var(--accent)', color: '#000', padding: '0.4rem 1.2rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em' }}>MOST POPULAR</span>}
-              <h3 className="serif" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{plan.name}</h3>
-              <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', marginBottom: '2.5rem', minHeight: '3rem' }}>{plan.description}</p>
-              <div style={{ marginBottom: '3rem' }}>
-                <span style={{ fontSize: '3rem', fontWeight: 400 }}>{plan.price}</span>
-                <span style={{ fontSize: '0.9rem', opacity: 0.5, marginLeft: '0.5rem' }}>/ event</span>
+      </div>
+
+      <div id="features" className="section">
+        <div className="section-eyebrow">Everything you need</div>
+        <h2 className="section-title">Built for your perfect day</h2>
+        <p className="section-sub">Every feature you need to create, share and manage your wedding invitations.</p>
+        <div className="features-grid">
+          <div className="feature-card"><div className="feature-icon">✦</div><div className="feature-title">Beautiful templates</div><div className="feature-desc">Choose from elegant designs crafted by professional designers. Garden, Golden, Rose, Ivory and more.</div></div>
+          <div className="feature-card"><div className="feature-icon">📋</div><div className="feature-title">RSVP tracking</div><div className="feature-desc">Collect guest responses in real time. Know exactly who is coming before the big day.</div></div>
+          <div className="feature-card"><div className="feature-icon">📅</div><div className="feature-title">Day-of timeline</div><div className="feature-desc">Add your full wedding schedule so guests always know what happens next.</div></div>
+          <div className="feature-card"><div className="feature-icon">🌍</div><div className="feature-title">Multi-language</div><div className="feature-desc">English, French, Arabic and more. Your guests read in their own language automatically.</div></div>
+          <div className="feature-card"><div className="feature-icon">📤</div><div className="feature-title">Share anywhere</div><div className="feature-desc">Share via link, WhatsApp, SMS or email. Works perfectly on every device.</div></div>
+          <div className="feature-card"><div className="feature-icon">🎁</div><div className="feature-title">Gift and FAQs</div><div className="feature-desc">Add bank details, gift messages, dress code and FAQs all in one beautiful place.</div></div>
+        </div>
+      </div>
+
+      <div id="templates" className="templates-showcase">
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div className="section-eyebrow">Design templates</div>
+          <h2 className="section-title">Find your perfect style</h2>
+          <p className="section-sub" style={{ textAlign: 'center', maxWidth: '400px', margin: '0 auto 48px' }}>Four distinct aesthetics, each crafted for a different kind of love story.</p>
+          <div className="showcase-grid">
+            <Link to="/builder" className="showcase-card">
+              <div className="showcase-thumb" style={{ background: 'linear-gradient(160deg,#e8f0e4,#f5f0e8)' }}>
+                <div className="s-names" style={{ color: '#2a3d28' }}>Sarah &amp; James</div>
+                <div className="s-date" style={{ color: '#4a6741' }}>JUNE 14, 2025</div>
               </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 4rem 0', flex: 1 }}>
-                {plan.features.map((f, j) => (
-                  <li key={j} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--text-dim)' }}>
-                    <CheckCircle2 size={16} color="var(--accent)" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/templates" className={plan.popular ? "btn-primary" : "btn-secondary"} style={{ width: '100%', textAlign: 'center' }}>{plan.cta}</Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Signature Features */}
-      <section style={{ background: 'rgba(255,255,255,0.02)', padding: '160px 0' }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '4rem' }}>
-          <div>
-            <Calendar size={32} color="var(--accent)" style={{ marginBottom: '2rem' }} />
-            <h4 className="serif" style={{ fontSize: '1.8rem', marginBottom: '1.2rem' }}>Timeline Integration</h4>
-            <p style={{ color: 'var(--text-dim)', lineHeight: 1.8 }}>Keep your guests informed with a beautifully designed Day-of Timeline. Perfect for managing complex itineraries.</p>
-          </div>
-          <div>
-            <AlignLeft size={32} color="var(--accent)" style={{ marginBottom: '2rem' }} />
-            <h4 className="serif" style={{ fontSize: '1.8rem', marginBottom: '1.2rem' }}>Advanced FAQ</h4>
-            <p style={{ color: 'var(--text-dim)', lineHeight: 1.8 }}>Answering repetitive questions shouldn't be your job. Our FAQ manager handles everything from dress codes to directions.</p>
-          </div>
-          <div>
-            <Gift size={32} color="var(--accent)" style={{ marginBottom: '2rem' }} />
-            <h4 className="serif" style={{ fontSize: '1.8rem', marginBottom: '1.2rem' }}>Gift Registry</h4>
-            <p style={{ color: 'var(--text-dim)', lineHeight: 1.8 }}>Seamlessly integrate your IBAN or registry links directly into your invitation card for an elegant unboxing experience.</p>
+              <div className="showcase-name">Garden of Eden</div>
+            </Link>
+            <Link to="/builder" className="showcase-card">
+              <div className="showcase-thumb" style={{ background: 'linear-gradient(160deg,#1c1a18,#2d2720)' }}>
+                <div className="s-names" style={{ color: '#faf7f2' }}>Isabella &amp; Sebastian</div>
+                <div className="s-date" style={{ color: '#c9a96e' }}>OCTOBER 5, 2025</div>
+              </div>
+              <div className="showcase-name">Golden Night</div>
+            </Link>
+            <Link to="/builder" className="showcase-card">
+              <div className="showcase-thumb" style={{ background: 'linear-gradient(160deg,#f9eff5,#ede0ec)' }}>
+                <div className="s-names" style={{ color: '#4a1e35' }}>Layla &amp; Karim</div>
+                <div className="s-date" style={{ color: '#9b5a7a' }}>SEPTEMBER 20, 2025</div>
+              </div>
+              <div className="showcase-name">Rose Bloom</div>
+            </Link>
+            <Link to="/builder" className="showcase-card">
+              <div className="showcase-thumb" style={{ background: 'linear-gradient(160deg,#faf6f0,#f5ede0)' }}>
+                <div className="s-names" style={{ color: '#2d2520' }}>Emma &amp; Oliver</div>
+                <div className="s-date" style={{ color: '#8b7355' }}>MARCH 8, 2026</div>
+              </div>
+              <div className="showcase-name">Ivory Classic</div>
+            </Link>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Final CTA */}
-      <section className="container" style={{ padding: '160px 0', textAlign: 'center' }}>
-        <div className="glass" style={{ padding: '8rem 4rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <h2 className="serif" style={{ fontSize: '4rem' }}>Your Love Story,<br/>Digitally Mastered.</h2>
-          <p style={{ color: 'var(--text-dim)', fontSize: '1.3rem', margin: '2rem auto 4rem', maxWidth: '600px' }}>Join the collection of premium hosts who choose cinematic excellence over standard emails.</p>
-          <Link to="/templates" className="btn-primary" style={{ padding: '1.5rem 4rem', fontSize: '1rem' }}>Create Your Legacy</Link>
+      <div className="how-it-works">
+        <div className="section-eyebrow" style={{ textAlign: 'center' }}>Simple process</div>
+        <h2 className="section-title" style={{ textAlign: 'center' }}>Ready in 3 steps</h2>
+        <div className="steps">
+          <div className="step"><div className="step-num">1</div><div className="step-title">Build your invitation</div><div className="step-desc">Fill in your details, pick a template, add your timeline and personalise every section.</div></div>
+          <div className="step"><div className="step-num">2</div><div className="step-title">Publish and share</div><div className="step-desc">Get a beautiful link to share via WhatsApp, email or anywhere you like.</div></div>
+          <div className="step"><div className="step-num">3</div><div className="step-title">Track RSVPs</div><div className="step-desc">Watch responses come in live. Know exactly who is attending your special day.</div></div>
         </div>
-      </section>
+      </div>
 
-      {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', padding: '80px 0' }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', opacity: 0.6 }}>
-            <Sparkles size={16} color="var(--accent)" />
-            <span style={{ fontSize: '0.9rem', letterSpacing: '0.1em' }}>ETERNALVOWS</span>
+      <div id="pricing" className="section">
+        <div className="section-eyebrow">Simple pricing</div>
+        <h2 className="section-title">One payment, forever yours</h2>
+        <p className="section-sub">No subscriptions, no hidden fees. Pay once and your invitation lives forever.</p>
+        <div className="pricing-grid">
+          <div className="price-card">
+            <div className="price-plan">Starter</div>
+            <div className="price-amount"><sup>€</sup>0</div>
+            <div style={{ height: '28px' }}></div>
+            <ul className="price-features">
+              <li><span className="check">✓</span> 1 invitation draft</li>
+              <li><span className="check">✓</span> All 4 templates</li>
+              <li><span className="check">✓</span> Watermarked preview</li>
+              <li><span className="cross">✗</span> RSVP tracking</li>
+              <li><span className="cross">✗</span> Shareable link</li>
+              <li><span className="cross">✗</span> Guest dashboard</li>
+            </ul>
+            <button className="btn btn-outline" style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/builder')}>Start free</button>
           </div>
-          <div style={{ color: 'var(--text-dim)', fontSize: '0.75rem' }}>
-            © 2026 ETERNALVOWS. CINEMATIC INVITATION SUITE.
+          <div className="price-card popular">
+            <div className="popular-badge">Most popular</div>
+            <div className="price-plan">Essential</div>
+            <div className="price-amount"><sup>€</sup>149</div>
+            <div className="price-old">Was €299</div>
+            <div className="price-save">Launch offer — save €150</div>
+            <ul className="price-features">
+              <li><span className="check">✓</span> Everything in Starter</li>
+              <li><span className="check">✓</span> Clean shareable link</li>
+              <li><span className="check">✓</span> RSVP tracking and management</li>
+              <li><span className="check">✓</span> Guest list dashboard</li>
+              <li><span className="check">✓</span> WhatsApp and SMS share</li>
+              <li><span className="check">✓</span> Multi-language support</li>
+              <li><span className="check">✓</span> Day-of timeline</li>
+              <li><span className="check">✓</span> Lifetime access</li>
+            </ul>
+            <button className="btn btn-gold" style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/builder')}>Get started — €149</button>
           </div>
+          <div className="price-card">
+            <div className="price-plan">Premium</div>
+            <div className="price-amount"><sup>€</sup>349</div>
+            <div style={{ height: '28px' }}></div>
+            <ul className="price-features">
+              <li><span className="check">✓</span> Everything in Essential</li>
+              <li><span className="check">✓</span> Full theme color editor</li>
+              <li><span className="check">✓</span> Cover video upload</li>
+              <li><span className="check">✓</span> Custom domain</li>
+              <li><span className="check">✓</span> Background music</li>
+              <li><span className="check">✓</span> White label</li>
+              <li><span className="check">✓</span> Priority support</li>
+            </ul>
+            <button className="btn btn-dark" style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/builder')}>Get Premium</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="cta-section">
+        <h2>Start your <em>forever</em> today</h2>
+        <p>Join thousands of couples who chose EternalVows for their big day.</p>
+        <button className="btn btn-gold" style={{ fontSize: '15px', padding: '16px 40px' }} onClick={() => navigate('/builder')}>Create your invitation — free</button>
+      </div>
+
+      <footer>
+        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', color: 'rgba(255,255,255,.6)' }}>Eternal<span style={{ color: 'var(--gold)' }}>Vows</span></div>
+        <div>© 2025 EternalVows. All rights reserved.</div>
+        <div style={{ display: 'flex', gap: '24px' }}>
+          <span style={{ cursor: 'pointer' }}>Privacy</span>
+          <span style={{ cursor: 'pointer' }}>Terms</span>
+          <span style={{ cursor: 'pointer' }}>Contact</span>
         </div>
       </footer>
     </div>

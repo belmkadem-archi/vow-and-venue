@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import TemplatePicker from './pages/TemplatePicker';
 import BuilderPage from './pages/BuilderPage';
 import UnboxingPreview from './pages/UnboxingPreview';
 import Terms from './pages/Terms';
@@ -12,7 +11,6 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/templates" element={<TemplatePicker />} />
       <Route path="/builder" element={<BuilderPage />} />
       <Route path="/preview" element={<UnboxingPreview />} />
       <Route path="/terms" element={<Terms />} />

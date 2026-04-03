@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-export type TemplateModel = 'ethereal-gold' | 'midnight-noir' | 'botanical-glass';
+export type TemplateModel = 'garden' | 'golden' | 'rose' | 'ivory';
 
 export interface TimelineItem {
   time: string;
@@ -54,7 +54,7 @@ const DEFAULT_DATA: InvitationData = {
   mapsLink: 'https://maps.google.com',
   soundtrack: 'Nocturne in Eb Major',
   personalMessage: 'We can\'t wait to share this beautiful day with you.',
-  template: 'ethereal-gold',
+  template: 'garden',
   timeline_items: [
     { time: '17:00', title: 'Ceremony', description: 'Exchange of vows at the gazebo' },
     { time: '18:30', title: 'Cocktails', description: 'Drinks and appetizers on the lawn' },
